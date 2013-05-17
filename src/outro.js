@@ -2,9 +2,9 @@
 // otherwise, assume we are in a browser
 
 if (module.exports) {
-	module.exports = Motive;
+    module.exports = Motive;
 } else {
-	window.Motive = Motive;
+    window.Motive = Motive;
 }
 
 })();
