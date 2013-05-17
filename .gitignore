@@ -1,5 +1,5 @@
 .DS_Store
-node_modules
-*.html
-img
-stylesheets
+node_modules/
+/index.html
+img/
+stylesheets/
