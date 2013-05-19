@@ -1,10 +1,11 @@
-// if in nodejs, create a module
-// otherwise, assume we are in a browser
+// try creating a node module
+// on fail, create a global object
 
-if (module.exports) {
-    module.exports = Motive;
-} else {
-    window.Motive = Motive;
+try {
+	module.exports = Motive;
+}
+catch (err) {
+	window.Motive = Motive;
 }
 
 })();
