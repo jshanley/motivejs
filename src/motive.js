@@ -1,36 +1,10 @@
-define('motive', [
-    './note',
-    './chord',
-    './scale'
-], function( Note, Chord ) {
+import "start";
 
-var Motive = {
-    Note: Note,
-    Chord: Chord,
-    Scale: Scale
-};
+import "errors";
+import "primitives/";
+import "utilities/";
+import "note";
+import "chord";
+import "scale";
 
-return Motive;
-
-});
-
-/* keep this around for reference of structure
-
-
-var Motive = {
-    version: '0.1.0',
-    primitives: {
-        pitch_classes: pitch_classes,
-        steps: steps,
-        operators: operators,
-        keys: keys,
-        intervals: intervals,
-        scales: scales
-    },
-    transpose: transpose,
-    random: {
-        interval: getRandomInterval,
-        pitch_class: getRandomPitchClass
-    }
-};
-*/
+import "end";
