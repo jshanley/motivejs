@@ -1,4 +1,22 @@
-//PUBLIC API
+define('motive', [
+    './note',
+    './chord',
+    './scale'
+], function( Note, Chord ) {
+
+var Motive = {
+    Note: Note,
+    Chord: Chord,
+    Scale: Scale
+};
+
+return Motive;
+
+});
+
+/* keep this around for reference of structure
+
+
 var Motive = {
     version: '0.1.0',
     primitives: {
@@ -15,3 +33,4 @@ var Motive = {
         pitch_class: getRandomPitchClass
     }
 };
+*/

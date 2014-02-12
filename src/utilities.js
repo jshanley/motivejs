@@ -1,3 +1,5 @@
+define('utilities', ['./primitives'], function(primitives){
+
 var transpose = function(pitch_name, direction, interval){
     if(interval === 'U' || interval === 'R'){
         return pitch_name;
@@ -10,26 +12,26 @@ var transpose = function(pitch_name, direction, interval){
     var input_operator = pitch_name.replace(/[A-G](.*)/, '$1');
     var alter = 0;
     if(input_operator) {
-        for(var o = 0; o < operators.length; o++){
-            if (input_operator === operators[o].name){
-                alter = operators[o].value;
+        for(var o = 0; o < primitives.operators.length; o++){
+            if (input_operator === primitives.operators[o].name){
+                alter = primitives.operators[o].value;
                 break;
             }
         }
     }
     var step_index, input_value;
-    for (var s = 0; s < steps.length; s++) {
-        if (step === steps[s].name) {
+    for (var s = 0; s < primitives.steps.length; s++) {
+        if (step === primitives.steps[s].name) {
             step_index = s;
-            input_value = (steps[s].value + alter) % 12;
+            input_value = (primitives.steps[s].value + alter) % 12;
             break;
         }
     }
     var interval_value, interval_steps;
-    for (var i = 0; i < intervals.length; i++) {
-        if (interval === intervals[i].name) {
-            interval_value = intervals[i].semitones;
-            interval_steps = intervals[i].steps;
+    for (var i = 0; i < primitives.intervals.length; i++) {
+        if (interval === primitives.intervals[i].name) {
+            interval_value = primitives.intervals[i].semitones;
+            interval_steps = primitives.intervals[i].steps;
             break;
         }
     }
@@ -38,20 +40,20 @@ var transpose = function(pitch_name, direction, interval){
         case 'up': {
             target_step_index = (step_index + interval_steps) % 7;
             target_value = (input_value + interval_value) % 12;
-            break;
         }
+        break;
         case 'down': {
             target_step_index = (7 + (step_index - interval_steps)) % 7;
             target_value = (12 + (input_value - interval_value)) % 12;
-            break;
         }
+        break;
     }
-    if (target_value === (12 + steps[target_step_index].value) % 12) {
-        return steps[target_step_index].name;
+    if (target_value === (12 + primitives.steps[target_step_index].value) % 12) {
+        return primitives.steps[target_step_index].name;
     } else {
-        for (var op = 0; op < operators.length; op++) {
-            if (target_value === (12 + steps[target_step_index].value + operators[op].value) % 12) {
-                return steps[target_step_index].name + operators[op].name;
+        for (var op = 0; op < primitives.operators.length; op++) {
+            if (target_value === (12 + primitives.steps[target_step_index].value + primitives.operators[op].value) % 12) {
+                return primitives.steps[target_step_index].name + primitives.operators[op].name;
             }
         }
     }
@@ -172,11 +174,11 @@ var getRandomInterval = function(simple, normalized) {
     var interval;
     var rnd;
     if (simple) {
-        rnd = Math.floor(Math.random() * simple_intervals.length);
-        interval = simple_intervals[rnd];
+        rnd = Math.floor(Math.random() * primitives.simple_intervals.length);
+        interval = primitives.simple_intervals[rnd];
     } else {
-        rnd = Math.floor(Math.random() * intervals.length);
-        interval = intervals[rnd];
+        rnd = Math.floor(Math.random() * primitives.intervals.length);
+        interval = primitives.intervals[rnd];
     }
     output.semitones = interval.semitones;
     output.steps = interval.steps;
@@ -186,23 +188,34 @@ var getRandomInterval = function(simple, normalized) {
 
 var getRandomPitchClass = function() {
     var output = {};
-    var index = Math.floor(Math.random() * pitch_classes.length);
-    output.value = pitch_classes[index].value;
-    output.natural = pitch_classes[index].natural;
-    output.flat = pitch_classes[index].flat;
-    output.sharp = pitch_classes[index].sharp;
-    output.dblflat = pitch_classes[index].dblflat;
-    output.dblsharp = pitch_classes[index].dblsharp;
-    output.common = pitch_classes[index].common;
-    if (pitch_classes[index].natural) {
-        output.name = pitch_classes[index].natural;
+    var index = Math.floor(Math.random() * primitives.pitch_classes.length);
+    output.value = primitives.pitch_classes[index].value;
+    output.natural = primitives.pitch_classes[index].natural;
+    output.flat = primitives.pitch_classes[index].flat;
+    output.sharp = primitives.pitch_classes[index].sharp;
+    output.dblflat = primitives.pitch_classes[index].dblflat;
+    output.dblsharp = primitives.pitch_classes[index].dblsharp;
+    output.common = primitives.pitch_classes[index].common;
+    if (primitives.pitch_classes[index].natural) {
+        output.name = primitives.pitch_classes[index].natural;
     } else {
         var spelling = Math.round(Math.random());
         if (spelling) {
-            output.name = pitch_classes[index].flat;
+            output.name = primitives.pitch_classes[index].flat;
         } else {
-            output.name = pitch_classes[index].sharp;
+            output.name = primitives.pitch_classes[index].sharp;
         }
     }
     return output;
 };
+
+var utilities = {
+    transpose: transpose,
+    normalizeInterval: normalizeInterval,
+    parseChordFormula: parseChordFormula,
+    getNoteNamesFromIntervalArray: getNoteNamesFromIntervalArray,
+    getRandomInterval: getRandomInterval,
+    getRandomPitchClass: getRandomPitchClass;
+}
+
+});

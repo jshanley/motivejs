@@ -1,3 +1,5 @@
+define('primitives', [], function(){
+
 var pitch_classes = [
     { value: 0,     natural: 'C',   flat: null, sharp: 'B#',    dblflat: 'Dbb',     dblsharp: null, common: 'C' },
     { value: 1,     natural: null,  flat: 'Db', sharp: 'C#',    dblflat: null,      dblsharp: 'Bx', common: 'C#' },
@@ -131,3 +133,20 @@ var tetrachords = [
     { name: 'hungarian minor',  pattern: [2,1,3] },
     { name: 'harmonic',         pattern: [1,3,1] }
 ];
+
+var primitives = {
+    pitch_classes: pitch_classes,
+    steps: steps,
+    operators: operators,
+    keys: keys,
+    simple_intervals: simple_intervals,
+    intervals: intervals,
+    scales: scales,
+    tetrachords: tetrachords
+};
+
+return primitives;
+
+});
+
+

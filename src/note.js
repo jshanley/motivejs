@@ -1,4 +1,11 @@
-Motive.Note = function(name) {
+define('note', ['./primitives'], function(primitives){
+
+var pitch_classes = primitives.pitch_classes,
+    steps = primitives.steps,
+    operators = primitives.operators,
+    intervals = primitives.intervals;
+
+var Note = function(name) {
     if (!name) {
         console.log('you must specify a note name or midi number');
         return;
@@ -109,12 +116,12 @@ Motive.Note = function(name) {
     return this;
 };
 
-Motive.Note.prototype.transpose = function(direction, interval){
+Note.prototype.transpose = function(direction, interval){
     switch(this.kind){
         case 'pitch-class': {
             var myname = this.pitch_name;
             var mynewname = transpose(myname, direction, interval);
-            return new Motive.Note(mynewname);
+            return new Note(mynewname);
             break;
         }
         case 'pitch': {
@@ -157,8 +164,12 @@ Motive.Note.prototype.transpose = function(direction, interval){
                 }
             }
             var newoctave = parseInt(this.octave, 10) + octave_change;
-            return new Motive.Note(mynewname + newoctave.toString());
+            return new Note(mynewname + newoctave.toString());
             break;
         }
     }
 };
+
+return Note;
+
+});

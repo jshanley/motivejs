@@ -1,4 +1,7 @@
-Motive.Scale = function(name){
+define('scale', ['./primitives','./utilities','./note'], function(primitives, utilities, Note){
+
+
+var Scale = function(name){
     if (!name) {
         console.log('no scale name specified');
         return;
@@ -19,18 +22,18 @@ Motive.Scale = function(name){
         this.formula = formula;
 
         var matched;
-        for(var i = 0; i < scales.length; i++){
-            if(scales[i].name === formula){
-                matched = scales[i];
+        for(var i = 0; i < primitives.scales.length; i++){
+            if(primitives.scales[i].name === formula){
+                matched = primitives.scales[i];
                 break;
             }
         }
         if(matched){
             this.matched = matched;
-            var mynotes = getNoteNamesFromIntervalArray(root, matched.intervals);
+            var mynotes = utilities.getNoteNamesFromIntervalArray(root, matched.intervals);
             var note_members = [];
             for (var i = 0; i < mynotes.length; i++) {
-                note_members.push(new Motive.Note(mynotes[i]));
+                note_members.push(new Note(mynotes[i]));
             }
             this.note_members = note_members;
             this.interval_members = matched.intervals;
@@ -46,3 +49,5 @@ Motive.Scale = function(name){
         return;
     }
 };
+
+});
