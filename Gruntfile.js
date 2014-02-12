@@ -1,29 +1,32 @@
-module.exports = function (grunt) {
-	grunt.loadNpmTasks('grunt-contrib-concat');
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+module.exports = function(grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
-		concat: {
+		smash: {
 			build: {
-				src: [
-					'src/intro.js',
-					'src/primitives.js',
-					'src/functions.js',
-					'src/api.js',
-					'src/note.js',
-					'src/chord.js',
-					'src/scale.js',
-					'src/outro.js'
-				],
-				dest: '<%= pkg.name %>.js'
+				src: 'src/motive.js',
+				dest: 'motive.js'
+			}
+		},
+		shell: {
+			jsbeautify: {
+				command: "js-beautify motive.js -o motive.js -s 2"
 			}
 		},
 		uglify: {
+			options: {
+				mangle: false
+			},
 			build: {
-				src: '<%= pkg.name %>.js',
-				dest: '<%= pkg.name %>.min.js'
+				files: {
+					'motive.min.js': ['motive.js']
+				}
 			}
 		}
+
 	});
-	grunt.registerTask('default', ['concat', 'uglify']);
+	grunt.loadNpmTasks('grunt-smash');
+	grunt.loadNpmTasks('grunt-shell');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
+
+	grunt.registerTask('default', ['smash', 'shell:jsbeautify', 'uglify']);
 };
