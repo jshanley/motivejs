@@ -20,5 +20,3 @@ Licensed under the [MIT license](LICENSE-MIT).
 ***
 
 Project created by [John Shanley](https://github.com/johnshanley).
-
-_This file was generated on Thu Feb 20 2014 19:17:33._
