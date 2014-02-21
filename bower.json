@@ -1,7 +1,23 @@
 {
   "name": "motive",
-  "main": "Gruntfile.js",
-  "dependencies": {
-    "bootstrap": "~0.3.0"
-  }
+  "version": "0.1.0",
+  "main": "motive.js",
+  "scripts": [
+    "motive.js"
+  ],
+  "ignore": [
+    ".DS_Store",
+    ".git",
+    ".gitignore",
+    ".npmignore",
+    ".travis.yml",
+    "Makefile",
+    "bin",
+    "component.json",
+    "index.js",
+    "node_modules",
+    "package.json",
+    "src",
+    "test"
+  ]
 }
