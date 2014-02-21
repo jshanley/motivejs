@@ -5,4 +5,4 @@
  * Licensed under the MIT license.
  */
 
-exports = module.exports = require('./motive');
+exports = module.exports = require('./src/motive');

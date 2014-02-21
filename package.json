@@ -20,7 +20,7 @@
       "url": "https://github.com/johnshanley/motivejs/blob/master/LICENSE-MIT"
     }
   ],
-  "main": "motive.js",
+  "main": "index.js",
   "engines": {
     "node": ">= 0.8.0"
   },
