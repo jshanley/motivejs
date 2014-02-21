@@ -12,13 +12,6 @@ _(Coming soon)_
 
 _(Coming soon)_
 
-
-## Contributing
-
-Please read through the [contributing guidelines](CONTRIBUTING.md). In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [grunt](http://gruntjs.com/).
-
-Editor preferences are available in the [editor config](.editorconfig) for easy use in common text editors. Read more and download plugins at [http://editorconfig.org](http://editorconfig.org).
-
 ## License
 Copyright (c) 2014 John Shanley
 Licensed under the [MIT license](LICENSE-MIT).
