@@ -10,6 +10,15 @@ var note = (function() {
     var note_prototype = {
         name : 'C',
         pitch_class : 0,
+        setOctave: function(octave) {
+            if (typeof octave !== 'number') {
+                throw new TypeError('Octave must be a number.');
+            }
+            this.octave = octave;
+            this.scientific = this.name + octave.toString(10);
+            this.midi = (12 * (octave + 1)) + this.pitchClass;
+            this.frequency = mtof(this.midi);
+        },
         transpose : function(direction, interval) {
             return note(transpose(this.scientific ? this.scientific : this.name, direction, interval));
         }
@@ -34,7 +43,7 @@ var note = (function() {
         var noteObj = Object.create(note_prototype);
         
         noteObj.name = name;
-        noteObj.pitch_class = fifthsToPC(fifths.indexOf(parsed.step + parsed.accidental));
+        noteObj.pitchClass = fifthsToPC(fifths.indexOf(parsed.step + parsed.accidental));
 
         noteObj.parts = {
             step: parsed.step,
@@ -45,7 +54,7 @@ var note = (function() {
             noteObj.name = parsed.step + parsed.accidental;
             noteObj.octave = parsed.octave;
             noteObj.scientific = name;
-            noteObj.midi = (12 * (parsed.octave + 1)) + noteObj.pitch_class;
+            noteObj.midi = (12 * (parsed.octave + 1)) + noteObj.pitchClass;
             noteObj.frequency = mtof(noteObj.midi);
         }
         
