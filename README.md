@@ -1,4 +1,4 @@
-# MotiveJS [![NPM version](https://badge.fury.io/js/motive.png)](http://badge.fury.io/js/motive) 
+# MotiveJS
 
 > JavaScript music theory library
 
