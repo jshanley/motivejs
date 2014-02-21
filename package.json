@@ -1,26 +1,42 @@
 {
   "name": "motive",
+  "description": "JavaScript music theory library",
   "version": "0.1.0",
-  "description": "A JavaScript music theory library",
-  "main": "motive.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "homepage": "https://github.com/johnshanley/motive/",
+  "author": {
+    "name": "John Shanley",
+    "url": "https://github.com/johnshanley"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnshanley/motivejs.git"
+    "url": "https://github.com/johnshanley/motive.git"
   },
-  "author": "John Shanley",
-  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/johnshanley/motivejs/issues"
+    "url": "https://github.com/johnshanley/motive/issues"
   },
-  "homepage": "https://github.com/johnshanley/motivejs",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/johnshanley/motive//blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "motive.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
   "devDependencies": {
-    "grunt": "~0.4.2",
-    "grunt-smash": "~0.1.0",
-    "grunt-contrib-uglify": "~0.3.2",
-    "js-beautify": "~1.4.2",
-    "grunt-shell": "~0.6.4"
-  }
+    "assemble": "~0.4.2",
+    "grunt-contrib-clean": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-watch": "~0.5.1",
+    "grunt": "^0.4.2",
+    "grunt-contrib-gluejs": "0.0.4"
+  },
+  "keywords": [
+    "assemble"
+  ]
 }

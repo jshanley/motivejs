@@ -1,10 +1,11 @@
-import "start";
+// load polyfills
+require('./utilities/polyfills');
 
-import "errors";
-import "primitives/";
-import "utilities/";
-import "note";
-import "chord";
-import "scale";
+// load base modules
+var note = require('./note');
 
-import "end";
+
+// this will be the global object
+module.exports = {
+    note: note
+};

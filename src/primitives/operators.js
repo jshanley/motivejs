@@ -1,6 +1,5 @@
-primitives.operators = [
-    { name: 'b',    value: -1 },
-    { name: '#',    value: 1 },
-    { name: 'bb',   value: -2 },
-    { name: 'x',    value: 2 }
-];
+module.exports = {
+	'b': -1,
+	'#': 1,
+	'x': 2
+};

@@ -1,58 +1,39 @@
-utilities.transpose = function(pitch_name, direction, interval){
-    if(interval === 'U' || interval === 'R'){
-        return pitch_name;
+var intervals    = require('../primitives/intervals'),
+    fifths       = require('../primitives/fifths'),
+    steps        = require('../primitives/steps'),
+    n_validation = require('../regex/note_name'),
+    i_validation = require('../regex/interval_name');
+
+function transpose(note_name, direction, interval) {
+
+    if (!n_validation.validate(note_name)) {
+        throw new Error('Invalid note name.');
     }
     if (direction !== 'up' && direction !== 'down') {
-        return pitch_name;
+        throw new Error('Transpose direction must be either "up" or "down".');
+    }
+    if (!i_validation.validate(interval)) {
+        throw new Error('Invalid interval name.');
     }
 
-    var step = pitch_name.replace(/([A-G]).*/, '$1');
-    var input_operator = pitch_name.replace(/[A-G](.*)/, '$1');
-    var alter = 0;
-    if(input_operator) {
-        for(var o = 0; o < primitives.operators.length; o++){
-            if (input_operator === primitives.operators[o].name){
-                alter = primitives.operators[o].value;
-                break;
-            }
-        }
+    var factor = direction === 'up' ? 1 : -1;
+    var n_parsed = n_validation.parse(note_name);
+
+    var new_note_name = fifths.atIndex(fifths.indexOf(n_parsed.step + n_parsed.accidental) + (factor * intervals.indexOf(interval)));
+    
+    // check if octave adjustment is needed
+    if (!n_parsed.octave) {
+        return new_note_name;
     }
-    var step_index, input_value;
-    for (var s = 0; s < primitives.steps.length; s++) {
-        if (step === primitives.steps[s].name) {
-            step_index = s;
-            input_value = (primitives.steps[s].value + alter) % 12;
-            break;
-        }
+    // octave adjustment
+    var i_parsed = i_validation.parse(interval);
+    var new_octave = n_parsed.octave + (factor * Math.floor(i_parsed.size / 8));
+    var normalized_steps = i_parsed.size > 7 ? (i_parsed.size % 7) - 1 : i_parsed.size - 1;
+    if ((steps.indexOf(n_parsed.step) + normalized_steps) >= 7) {
+        new_octave += factor;
     }
-    var interval_value, interval_steps;
-    for (var i = 0; i < primitives.intervals.length; i++) {
-        if (interval === primitives.intervals[i].name) {
-            interval_value = primitives.intervals[i].semitones;
-            interval_steps = primitives.intervals[i].steps;
-            break;
-        }
-    }
-    var target_step_index, target_value;
-    switch(direction){
-        case 'up': {
-            target_step_index = (step_index + interval_steps) % 7;
-            target_value = (input_value + interval_value) % 12;
-        }
-        break;
-        case 'down': {
-            target_step_index = (7 + (step_index - interval_steps)) % 7;
-            target_value = (12 + (input_value - interval_value)) % 12;
-        }
-        break;
-    }
-    if (target_value === (12 + primitives.steps[target_step_index].value) % 12) {
-        return primitives.steps[target_step_index].name;
-    } else {
-        for (var op = 0; op < primitives.operators.length; op++) {
-            if (target_value === (12 + primitives.steps[target_step_index].value + primitives.operators[op].value) % 12) {
-                return primitives.steps[target_step_index].name + primitives.operators[op].name;
-            }
-        }
-    }
-};
+    return new_note_name + new_octave.toString(10);
+}
+
+module.exports = transpose;
+
