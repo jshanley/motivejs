@@ -54,6 +54,12 @@ var note = (function() {
         },
         transpose : function(direction, interval) {
             return note(transpose(this.scientific ? this.scientific : this.name, direction, interval));
+        },
+        up: function(interval) {
+            return this.transpose('up', interval);
+        },
+        down: function(interval) {
+            return this.transpose('down', interval);
         }
     };
 
