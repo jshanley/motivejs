@@ -1,6 +1,6 @@
 'use strict';
 
-var motive = require('../motive.js');
+var motive = require('./src/motive.js');
 
 /*
   ======== A Handy Little Nodeunit Reference ========
