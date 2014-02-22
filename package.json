@@ -32,8 +32,6 @@
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-nodeunit": "~0.2.0",
     "grunt-contrib-watch": "~0.5.1",
-    "grunt-contrib-gluejs": "0.0.4",
-    "punch": "~0.5.44",
-    "punch-markdown-highlight": "~1.1.1"
+    "grunt-contrib-gluejs": "0.0.4"
   }
 }
