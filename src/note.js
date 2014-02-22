@@ -1,4 +1,4 @@
-var validation      = require('./regex/note_name'),
+var validate        = require('./regex/note_name'),
     pitch_names     = require('./primitives/pitch_names'),
     mtof            = require('./convert/mtof'),
     transpose       = require('./utilities/transpose');
@@ -78,11 +78,10 @@ var note = (function() {
             throw new TypeError('Note name must be a string or number.');
         }
 
-        if (!validation.validate(name)) {
+        var parsed = validate(name).parse();
+        if (!parsed) {
             throw new Error('Invalid note name.');
         }
-
-        var parsed = validation.parse(name);
         
         var noteObj = Object.create(note_prototype);
         

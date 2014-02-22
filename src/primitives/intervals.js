@@ -1,14 +1,14 @@
-var Circle              = require('../math/circle'),
-    modulo              = require('../math/modulo'),
-    validation          = require('../regex/interval_name');
+var Circle   = require('../math/circle'),
+    modulo   = require('../math/modulo'),
+    validate = require('../regex/interval_name');
 
 var intervals = new Circle([4,1,5,2,6,3,7]);
 intervals.indexOf = function(interval_name) {
 
-    if (!validation.validate(interval_name)) {
+    var parsed = validate(interval_name).parse();
+    if (!parsed) {
         throw new Error('Invalid interval name.');
     }
-    var parsed = validation.parse(interval_name);
 
     var quality = parsed.quality,
         size = parsed.size;
