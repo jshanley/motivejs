@@ -1,5 +1,4 @@
 var validation      = require('./regex/note_name'),
-    fifths          = require('./primitives/fifths'),
     pitch_names     = require('./primitives/pitch_names'),
     mtof            = require('./convert/mtof'),
     transpose       = require('./utilities/transpose');
@@ -24,7 +23,7 @@ var note = (function() {
             return false;
         }
         return true;
-    }
+    };
     
     var note_prototype = {
         name : 'C',
