@@ -22,7 +22,7 @@ function transpose(note_name, direction, interval) {
     var new_note_name = fifths.atIndex(fifths.indexOf(n_parsed.step + n_parsed.accidental) + (factor * intervals.indexOf(interval)));
     
     // check if octave adjustment is needed
-    if (!n_parsed.octave) {
+    if (n_parsed.octave === null) {
         return new_note_name;
     }
     // octave adjustment

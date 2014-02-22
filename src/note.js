@@ -1,8 +1,6 @@
 var validation      = require('./regex/note_name'),
     fifths          = require('./primitives/fifths'),
-    pitch_classes   = require('./primitives/pitch_classes'),
-    fifthsToPC      = require('./convert/fifths_to_pc'),
-    accidentalToAlter = require('./convert/accidental_to_alter'),
+    pitch_names     = require('./primitives/pitch_names'),
     mtof            = require('./convert/mtof'),
     transpose       = require('./utilities/transpose');
 
@@ -10,7 +8,7 @@ var note = (function() {
 
     // this function will ensure that input to a note method is another note object
     //   in case a string is given instead
-    function toNote(input) {
+    var toNote = function(input) {
         if (typeof input === 'string') {
             input = note(input);
         }
@@ -18,6 +16,14 @@ var note = (function() {
             throw new TypeError('Input must be a note object or note name.');
         }
         return input;
+    };
+
+    // checks if a note object has an octave defined on it
+    var octaveOn = function(obj) {
+        if (typeof obj.octave === 'undefined' || obj.octave === null) {
+            return false;
+        }
+        return true;
     }
     
     var note_prototype = {
@@ -28,7 +34,7 @@ var note = (function() {
             if (this.name !== other.name) {
                 return false;
             }
-            if (this.octave && other.octave && (this.octave !== other.octave)) {
+            if (octaveOn(this) && octaveOn(other) && (this.octave !== other.octave)) {
                 return false;
             }
             return true;
@@ -38,7 +44,7 @@ var note = (function() {
             if (this.pitchClass !== other.pitchClass) {
                 return false;
             }
-            if (this.octave && other.octave && (Math.abs(this.midi - other.midi) > 11)) {
+            if (octaveOn(this) && octaveOn(other) && (Math.abs(this.midi - other.midi) > 11)) {
                 return false;
             }
             return true;
@@ -49,7 +55,7 @@ var note = (function() {
             }
             this.octave = octave;
             this.scientific = this.name + octave.toString(10);
-            this.midi = (12 * (octave + 1)) + this.pitchClass;
+            this.midi = pitch_names.indexOf(this.scientific);
             this.frequency = mtof(this.midi);
         },
         transpose : function(direction, interval) {
@@ -68,7 +74,7 @@ var note = (function() {
         if (typeof noteInput ==='string') {
             name = noteInput;
         } else if (typeof noteInput === 'number') {
-            name = pitch_classes.atIndex(noteInput);
+            name = pitch_names.atIndex(noteInput);
         } else {
             throw new TypeError('Note name must be a string or number.');
         }
@@ -82,18 +88,18 @@ var note = (function() {
         var noteObj = Object.create(note_prototype);
         
         noteObj.name = name;
-        noteObj.pitchClass = fifthsToPC(fifths.indexOf(parsed.step + parsed.accidental));
+        noteObj.pitchClass = pitch_names.indexOf(parsed.step + parsed.accidental);
 
         noteObj.parts = {
             step: parsed.step,
             accidental: parsed.accidental
         };
 
-        if (parsed.octave) {
+        if (parsed.octave !== null) {
             noteObj.name = parsed.step + parsed.accidental;
             noteObj.octave = parsed.octave;
             noteObj.scientific = name;
-            noteObj.midi = (12 * (parsed.octave + 1)) + pitch_classes.indexOf(parsed.step) + accidentalToAlter(parsed.accidental);
+            noteObj.midi = pitch_names.indexOf(noteObj.scientific);
             noteObj.frequency = mtof(noteObj.midi);
         }
         
