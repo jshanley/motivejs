@@ -1,20 +1,14 @@
 var validate        = require('./regex/note_name'),
     pitch_names     = require('./primitives/pitch_names'),
     mtof            = require('./convert/mtof'),
-    transpose       = require('./utilities/transpose');
+    transpose       = require('./utilities/transpose'),
+    toObject        = require('./utilities/to_object');
 
 var note = (function() {
 
-    // this function will ensure that input to a note method is another note object
-    //   in case a string is given instead
+    // converts an input to note object if a string is given instead
     var toNote = function(input) {
-        if (typeof input === 'string') {
-            input = note(input);
-        }
-        if (typeof input !== 'object') {
-            throw new TypeError('Input must be a note object or note name.');
-        }
-        return input;
+        return toObject(input, note);
     };
 
     // checks if a note object has an octave defined on it
@@ -58,7 +52,7 @@ var note = (function() {
             this.frequency = mtof(this.midi);
         },
         transpose : function(direction, interval) {
-            return note(transpose(this.scientific ? this.scientific : this.name, direction, interval));
+            return note(transpose(octaveOn(this) ? this.scientific : this.name, direction, interval));
         },
         up: function(interval) {
             return this.transpose('up', interval);

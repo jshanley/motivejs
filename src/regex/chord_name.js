@@ -5,7 +5,7 @@ var validation = (function() {
     // lets split up this ugly regex
     var intro       = /^/,
         root_note   = /([A-G](?:b+|\#+|x+)?)/,
-        species     = /((?:maj|sus|aug|dim|mmaj|m|\-)?(?:\d+)?(?:\/)?(?:\d)?)?/,
+        species     = /((?:maj|min|sus|aug|dim|mmaj|m|\-)?(?:\d+)?(?:\/)?(?:\d)?)?/,
         alterations = /((?:(?:add|sus)(?:\d+)|(?:sus|alt)|(?:\#|\+|b|\-)(?:\d+))*)/,
         bass_slash  = /(\/)?/,
         bass_note   = /([A-G](?:b+|\#+|x+)?)?/,
@@ -24,10 +24,10 @@ var validation = (function() {
     return makeValidation('chord', chord_regex, function(captures){
         return {
             root:           captures[1],
-            species:        captures[2],
-            alterations:    captures[3],
-            slash:          captures[4],
-            bass:           captures[5]
+            species:        captures[2] ? captures[2] : '',
+            alterations:    captures[3] ? captures[3] : '',
+            slash:          captures[4] ? captures[4] : '',
+            bass:           captures[5] ? captures[5] : ''
         };
     });
 
