@@ -1,4 +1,4 @@
-var validate        = require('./regex/note_name'),
+var validate        = require('./regex/validation/note_name'),
     pitch_names     = require('./primitives/pitch_names'),
     mtof            = require('./convert/mtof'),
     transpose       = require('./utilities/transpose'),

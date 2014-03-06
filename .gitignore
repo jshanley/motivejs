@@ -55,6 +55,7 @@ nbproject
 .idea
 tmp
 node_modules
+docpad
 pids
 logs
 

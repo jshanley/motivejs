@@ -1,8 +1,8 @@
 var intervals    = require('../primitives/intervals'),
     fifths       = require('../primitives/fifths'),
     steps        = require('../primitives/steps'),
-    validate_n   = require('../regex/note_name'),
-    validate_i   = require('../regex/interval_name');
+    validate_n   = require('../regex/validation/note_name'),
+    validate_i   = require('../regex/validation/interval_name');
 
 function transpose(note_name, direction, interval) {
     if (direction !== 'up' && direction !== 'down') {

@@ -1,7 +1,7 @@
 var Circle              = require('../math/circle'),
     modulo              = require('../math/modulo'),
     accidentalToAlter   = require('../convert/accidental_to_alter'),
-    validate            = require('../regex/note_name');
+    validate            = require('../regex/validation/note_name');
 
 var pitch_names = new Circle(['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B']);
 

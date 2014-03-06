@@ -1,6 +1,6 @@
 var Circle   = require('../math/circle'),
     modulo   = require('../math/modulo'),
-    validate = require('../regex/interval_name');
+    validate = require('../regex/validation/interval_name');
 
 var intervals = new Circle([4,1,5,2,6,3,7]);
 intervals.indexOf = function(interval_name) {

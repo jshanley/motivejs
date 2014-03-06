@@ -61,7 +61,7 @@ module.exports = (function(){
                 output = output.concat(basic_types.min, degree === '6' ? 'M6' : 'm7');
                 break;
             case 'aug':
-                output = output.concat(basic_types.aug, 'm7');
+                output = output.concat(basic_types.aug, degree === '6' ? 'M6' : 'm7');
                 break;
             case 'dim':
                 output = output.concat(basic_types.dim, 'd7');
