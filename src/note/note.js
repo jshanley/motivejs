@@ -59,6 +59,9 @@ var note = (function() {
         },
         down: function(interval) {
             return this.transpose('down', interval);
+        },
+        toString: function() {
+          return this.name;
         }
     };
 
