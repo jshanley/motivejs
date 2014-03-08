@@ -1,4 +1,4 @@
-var validate    = require('./regex/validation/interval_name');
+var validate    = require('../regex/validation/interval_name');
 
 // semitones from root of each note of the major scale
 var major = [0,2,4,5,7,9,11];
@@ -37,7 +37,7 @@ function getSemitones(quality, normalizedSize, octaves, species) {
     return major[normalizedSize - 1] + qualityInt + (octaves * 12);
 }
 
-// 1,4,5 are treated differently than other interval sizes, 
+// 1,4,5 are treated differently than other interval sizes,
 //   this helps to identify them immediately
 function getSpecies(size) {
     if (size === 1 || size === 4 || size === 5) {
@@ -60,8 +60,8 @@ var Interval = function(interval_name) {
     this.quality = parsed.quality;
     this.size = parsed.size;
     this.normalized = this.quality + normalizedSize.toString(10);
-    
-    
+
+
     this.species = getSpecies(normalizedSize);
 
     // this is kinda ugly but it works...
