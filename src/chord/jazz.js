@@ -1,9 +1,9 @@
 var validate            = require('../regex/validation/chord_name'),
-    note                = require('../note'),
+    note                = require('../note/note'),
     toObject            = require('../utilities/to_object'),
     transpose           = require('../utilities/transpose'),
     getSpeciesIntervals = require('./get_species_intervals'),
-    applyAlterations    = require('./apply_alterations');
+    applyAlterations    = require('../palette/apply_alterations');
 
 
 function JazzChord(chord_name) {
@@ -20,7 +20,8 @@ function JazzChord(chord_name) {
     this.formula = parsed.species + parsed.alterations;
     this.isSlash = parsed.slash === '/' ? true : false;
     this.bass = this.isSlash ? parsed.bass : parsed.root;
-} 
+    this.intervals = applyAlterations(speciesIntervals, parsed.alterations);
+}
 
 
 

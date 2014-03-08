@@ -5,7 +5,7 @@ var validation = (function() {
     // lets split up this ugly regex
     var intro       = /^/,
         root_note   = /([A-G](?:b+|\#+|x+)?)/,
-        species     = /((?:maj|min|sus|aug|dim|mmaj|m|\-)?(?:\d+)?(?:\/)?(?:\d)?)?/,
+        species     = /((?:maj|min|sus|aug|dim|mmaj|m|\-)?(?:\d+)?(?:\/\d+)?)?/,
         alterations = /((?:(?:add|sus)(?:\d+)|(?:sus|alt)|(?:\#|\+|b|\-)(?:\d+))*)/,
         bass_slash  = /(\/)?/,
         bass_note   = /([A-G](?:b+|\#+|x+)?)?/,

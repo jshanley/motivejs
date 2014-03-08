@@ -2,7 +2,7 @@
 
 > JavaScript music theory library
 
-### [Visit the docs →](http://johnshanley.github.io/motivejs)
+### [Visit the docs →](http://jshanley.github.io/motivejs)
 
 ## Examples
 
@@ -36,4 +36,4 @@ Licensed under the [MIT license](LICENSE-MIT).
 
 ***
 
-Project created by [John Shanley](https://github.com/johnshanley).
+Project created by [John Shanley](https://github.com/jshanley).
