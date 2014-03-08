@@ -5,9 +5,9 @@ module.exports = (function() {
       if (interval_array[i] === 'R') {
         output.push(root);
       } else {
-        output.push(root.transpose('up', interval_array[i]))
+        output.push(root.transpose('up', interval_array[i]));
       }
     }
     return output;
-  }
+  };
 })();

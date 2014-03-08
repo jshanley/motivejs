@@ -1,6 +1,5 @@
-var validate = require('../regex/validation/interval_name'),
-		splitStringByPattern = require('../regex/split_string_by_pattern'),
-		ParsedIntervalArray = require('./parsed_interval_array');
+var splitStringByPattern = require('../regex/split_string_by_pattern'),
+		ParsedIntervalArray  = require('./parsed_interval_array');
 
 
 module.exports = (function() {
@@ -36,6 +35,7 @@ module.exports = (function() {
 		}
 	};
 
+/* might want this later
 	var intervalType = function(parsed_interval) {
 		if (parsed_interval.quality === 'P' || parsed_interval.quality === 'M') {
 			return 'natural';
@@ -43,7 +43,7 @@ module.exports = (function() {
 			return 'altered';
 		}
 	};
-
+*/
 	var alterationType = function(alteration) {
 		if (/sus/.test(alteration)) {
 			return 'susX';
@@ -97,11 +97,11 @@ module.exports = (function() {
 					pia.remove(removal);
 					break;
 				case 'alt':
-					pia.update('d5')
-					pia.add('A5')
-					pia.update('m9')
-					pia.add('A9')
-					pia.update('m13')
+					pia.update('d5');
+					pia.add('A5');
+					pia.update('m9');
+					pia.add('A9');
+					pia.update('m13');
 					break;
 			}
 		}

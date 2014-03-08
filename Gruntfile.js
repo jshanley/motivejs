@@ -24,10 +24,6 @@ module.exports = function(grunt) {
       }
     },
 
-    nodeunit: {
-      files: ['test/test-*.js']
-    },
-
     watch: {
       jshint: {
         files: ['<%= jshint.all %>'],
@@ -38,13 +34,9 @@ module.exports = function(grunt) {
 
   // Load npm plugins to provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-nodeunit');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-gluejs');
 
-  // Tests to be run.
-  grunt.registerTask('test', ['nodeunit']);
-
   // Default to tasks to run with the "grunt" command.
-  grunt.registerTask('default', ['jshint', 'gluejs', 'test']);
+  grunt.registerTask('default', ['jshint', 'gluejs']);
 };

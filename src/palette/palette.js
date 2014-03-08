@@ -1,5 +1,3 @@
-var note = require('../note/note');
-
 function Palette(item) {
 	this.notes = [];
 	if (typeof item !== 'undefined') {

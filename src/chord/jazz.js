@@ -1,6 +1,5 @@
 var validate                = require('../regex/validation/chord_name'),
     note                    = require('../note/note'),
-    toObject                = require('../utilities/to_object'),
     transpose               = require('../utilities/transpose'),
     getSpeciesIntervals     = require('./get_species_intervals'),
     applyAlterations        = require('../palette/apply_alterations'),
@@ -25,7 +24,9 @@ function JazzChord(chord_name) {
     this.notes = getNotesFromIntervals(this.intervals, this.root);
 }
 
-
+JazzChord.prototype.transpose = function(direction, interval) {
+  return new JazzChord(transpose(this.root, direction, interval).name + this.formula);
+};
 
 module.exports = function(chord_name) {
     return new JazzChord(chord_name);
