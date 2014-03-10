@@ -20,7 +20,15 @@ module.exports = function(grunt) {
       },
       files: {
         src: ['src/*.js', 'src/**/*.js'],
-        dest: './motive.js'
+        dest: 'browser-build/motive.js'
+      }
+    },
+
+    uglify: {
+      browser_build: {
+        files: {
+          'browser-build/motive.min.js': ['browser-build/motive.js']
+        }
       }
     },
 
@@ -33,9 +41,10 @@ module.exports = function(grunt) {
   // Load npm plugins to provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-gluejs');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
   // Default to tasks to run with the "grunt" command.
-  grunt.registerTask('default', ['jshint', 'gluejs', 'nodeunit']);
+  grunt.registerTask('default', ['jshint', 'gluejs', 'uglify', 'nodeunit']);
   grunt.registerTask('test', ['nodeunit']);
 };
