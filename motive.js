@@ -168,7 +168,7 @@ module.exports = accidentalToAlter;},
 module.exports = alterToAccidental;},
 "src/convert/mtof.js": function(module, exports, require){// midi to frequency (Hz)
 module.exports = function mtof(midi) {
-	return Math.pow(2, ((midi - 69) / 12)) * 440;
+  return Math.pow(2, ((midi - 69) / 12)) * 440;
 };
 },
 "src/interval/interval.js": function(module, exports, require){var validate    = require('../regex/validation/interval_name');
@@ -414,115 +414,115 @@ module.exports = function(noteInput) {
 };
 },
 "src/palette/apply_alterations.js": function(module, exports, require){var splitStringByPattern = require('../regex/split_string_by_pattern'),
-		ParsedIntervalArray  = require('./parsed_interval_array');
+    ParsedIntervalArray  = require('./parsed_interval_array');
 
 
 module.exports = (function() {
 
-	var alteration_regex = /^(?:(?:add|sus|no)(?:\d+)|(?:sus|alt)|(?:n|b|\#|\+|\-)(?:\d+))/;
+  var alteration_regex = /^(?:(?:add|sus|no)(?:\d+)|(?:sus|alt)|(?:n|b|\#|\+|\-)(?:\d+))/;
 
-	// applies to alterations of the form (operation)(degree) such as 'b5' or '#9'
-	var toInterval = function(alteration) {
-		var valid = /(?:n|b|\#|\+|\-)(?:\d+)/;
-		if (!valid.test(alteration)) {
-			return false;
-		}
-		var operation = alteration.slice(0,1);
-		var degree = alteration.slice(1);
-		if (operation === '+') { operation = '#'; }
-		if (operation === '-') { operation = 'b'; }
-		if (operation === '#') {
-			return 'A' + degree;
-		}
-		if (operation === 'b') {
-			if (degree === '5' || degree === '11' || degree === '4') {
-				return 'd' + degree;
-			} else {
-				return 'm' + degree;
-			}
-		}
-		if (operation === 'n') {
-			if (degree === '5' || degree === '11' || degree === '4') {
-				return 'P' + degree;
-			} else {
-				return 'M' + degree;
-			}
-		}
-	};
+  // applies to alterations of the form (operation)(degree) such as 'b5' or '#9'
+  var toInterval = function(alteration) {
+    var valid = /(?:n|b|\#|\+|\-)(?:\d+)/;
+    if (!valid.test(alteration)) {
+      return false;
+    }
+    var operation = alteration.slice(0,1);
+    var degree = alteration.slice(1);
+    if (operation === '+') { operation = '#'; }
+    if (operation === '-') { operation = 'b'; }
+    if (operation === '#') {
+      return 'A' + degree;
+    }
+    if (operation === 'b') {
+      if (degree === '5' || degree === '11' || degree === '4') {
+        return 'd' + degree;
+      } else {
+        return 'm' + degree;
+      }
+    }
+    if (operation === 'n') {
+      if (degree === '5' || degree === '11' || degree === '4') {
+        return 'P' + degree;
+      } else {
+        return 'M' + degree;
+      }
+    }
+  };
 
 /* might want this later
-	var intervalType = function(parsed_interval) {
-		if (parsed_interval.quality === 'P' || parsed_interval.quality === 'M') {
-			return 'natural';
-		} else {
-			return 'altered';
-		}
-	};
+  var intervalType = function(parsed_interval) {
+    if (parsed_interval.quality === 'P' || parsed_interval.quality === 'M') {
+      return 'natural';
+    } else {
+      return 'altered';
+    }
+  };
 */
-	var alterationType = function(alteration) {
-		if (/sus/.test(alteration)) {
-			return 'susX';
-		}
-		if (/add/.test(alteration)) {
-			return 'addX';
-		}
-		if (/no/.test(alteration)) {
-			return 'noX';
-		}
-		if (/alt/.test(alteration)) {
-			return 'alt';
-		}
-		return 'binary';
-	};
+  var alterationType = function(alteration) {
+    if (/sus/.test(alteration)) {
+      return 'susX';
+    }
+    if (/add/.test(alteration)) {
+      return 'addX';
+    }
+    if (/no/.test(alteration)) {
+      return 'noX';
+    }
+    if (/alt/.test(alteration)) {
+      return 'alt';
+    }
+    return 'binary';
+  };
 
 
 
-	function getNaturalInterval(size) {
-		var normalized = size < 8 ? size : size % 7;
-		if (normalized === 1 || normalized === 4 || normalized === 5) {
-			return 'P' + size.toString(10);
-		} else {
-			return 'M' + size.toString(10);
-		}
-	}
+  function getNaturalInterval(size) {
+    var normalized = size < 8 ? size : size % 7;
+    if (normalized === 1 || normalized === 4 || normalized === 5) {
+      return 'P' + size.toString(10);
+    } else {
+      return 'M' + size.toString(10);
+    }
+  }
 
 
 
-	return function(interval_array, alterations) {
-		var pia = new ParsedIntervalArray(interval_array);
-		var alterationArray = splitStringByPattern(alterations, alteration_regex);
-		// for each alteration...
-		for (var a = 0; a < alterationArray.length; a++) {
-			var thisAlteration = alterationArray[a];
-			switch(alterationType(thisAlteration)) {
-				case 'binary':
-					var asInterval = toInterval(thisAlteration);
-					pia.update(asInterval);
-					break;
-				case 'susX':
-					pia.remove(3);
-					pia.add('P4');
-					break;
-				case 'addX':
-					var addition = parseInt(thisAlteration.slice(3), 10);
-					pia.add(getNaturalInterval(addition));
-					break;
-				case 'noX':
-					var removal = parseInt(thisAlteration.slice(2), 10);
-					pia.remove(removal);
-					break;
-				case 'alt':
-					pia.update('d5');
-					pia.add('A5');
-					pia.update('m9');
-					pia.add('A9');
-					pia.update('m13');
-					break;
-			}
-		}
+  return function(interval_array, alterations) {
+    var pia = new ParsedIntervalArray(interval_array);
+    var alterationArray = splitStringByPattern(alterations, alteration_regex);
+    // for each alteration...
+    for (var a = 0; a < alterationArray.length; a++) {
+      var thisAlteration = alterationArray[a];
+      switch(alterationType(thisAlteration)) {
+        case 'binary':
+          var asInterval = toInterval(thisAlteration);
+          pia.update(asInterval);
+          break;
+        case 'susX':
+          pia.remove(3);
+          pia.add('P4');
+          break;
+        case 'addX':
+          var addition = parseInt(thisAlteration.slice(3), 10);
+          pia.add(getNaturalInterval(addition));
+          break;
+        case 'noX':
+          var removal = parseInt(thisAlteration.slice(2), 10);
+          pia.remove(removal);
+          break;
+        case 'alt':
+          pia.update('d5');
+          pia.add('A5');
+          pia.update('m9');
+          pia.add('A9');
+          pia.update('m13');
+          break;
+      }
+    }
 
-		return pia.unparse();
-	};
+    return pia.unparse();
+  };
 })();
 },
 "src/palette/get_notes_from_interval_array.js": function(module, exports, require){module.exports = (function() {
@@ -540,29 +540,29 @@ module.exports = (function() {
 })();
 },
 "src/palette/palette.js": function(module, exports, require){function Palette(item) {
-	this.notes = [];
-	if (typeof item !== 'undefined') {
-		this.add(item);
-	}
+  this.notes = [];
+  if (typeof item !== 'undefined') {
+    this.add(item);
+  }
 }
 Palette.prototype.add = function(item) {
-	for (var i = 0; i < item.notes.length; i++) {
-		var inThis = false;
-		for (var t = 0; t < this.notes.length; t++) {
-			if (this.notes[t].isEquivalent(item.notes[i])) {
-				inThis = true;
-				break;
-			}
-		}
-		if (!inThis) {
-			this.notes.push(item.notes[i]);
-		}
-	}
+  for (var i = 0; i < item.notes.length; i++) {
+    var inThis = false;
+    for (var t = 0; t < this.notes.length; t++) {
+      if (this.notes[t].isEquivalent(item.notes[i])) {
+        inThis = true;
+        break;
+      }
+    }
+    if (!inThis) {
+      this.notes.push(item.notes[i]);
+    }
+  }
 };
 
 
 module.exports = function(item) {
-	return new Palette(item);
+  return new Palette(item);
 };
 },
 "src/palette/parsed_interval_array.js": function(module, exports, require){var validate = require('../regex/validation/interval_name');
@@ -786,14 +786,15 @@ pitch_names.atIndex = function(index) {
 module.exports = pitch_names;},
 "src/primitives/steps.js": function(module, exports, require){module.exports = ['C','D','E','F','G','A','B'];},
 "src/regex/split_string_by_pattern.js": function(module, exports, require){module.exports = function(str, pattern) {
-	var output = [];
-	while(pattern.test(str)) {
-		var thisMatch = str.match(pattern);
-		output.push(thisMatch[0]);
-		str = str.slice(thisMatch[0].length);
-	}
-	return output;
-};},
+  var output = [];
+  while(pattern.test(str)) {
+    var thisMatch = str.match(pattern);
+    output.push(thisMatch[0]);
+    str = str.slice(thisMatch[0].length);
+  }
+  return output;
+};
+},
 "src/regex/validation/chord_name.js": function(module, exports, require){var makeValidation = require('./validation_factory');
 
 var validation = (function() {
@@ -870,25 +871,26 @@ module.exports = function(note_name) {
 };},
 "src/regex/validation/validation_factory.js": function(module, exports, require){// this makes a validation function for a string type defined by 'name'
 module.exports = function(name, regex, parsing_function) {
-	return function(input) {
-		if (typeof input !== 'string') {
-			throw new TypeError('Cannot validate ' + name + '. Input must be a string.');
-		}
-		var validate = function() {
-			return input.match(regex) ? true : false;
-		};
-		return {
-			valid: validate(),
-			parse: function(){
-				if (!validate()) {
-					return false;
-				}
-				var captures = regex.exec(input);
-				return parsing_function(captures);
-			}
-		};
-	};
-};},
+  return function(input) {
+    if (typeof input !== 'string') {
+      throw new TypeError('Cannot validate ' + name + '. Input must be a string.');
+    }
+    var validate = function() {
+      return input.match(regex) ? true : false;
+    };
+    return {
+      valid: validate(),
+      parse: function(){
+        if (!validate()) {
+          return false;
+        }
+        var captures = regex.exec(input);
+        return parsing_function(captures);
+      }
+    };
+  };
+};
+},
 "src/utilities/polyfills.js": function(module, exports, require){// Object.create()
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
 if (typeof Object.create !== 'function') {
