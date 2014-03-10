@@ -68,9 +68,9 @@ var Interval = function(interval_name) {
 
   // this is kinda ugly but it works...
   //   dividing by 7 evenly returns an extra octave if the value is a multiple of 7
-  var octaves = Math.floor(this.size / 7.001);
+  this.octaves = Math.floor(this.size / 7.001);
 
-  this.semitones = getSemitones(this.quality, normalizedSize, octaves, this.species);
+  this.semitones = getSemitones(this.quality, normalizedSize, this.octaves, this.species);
 
   return this;
 };
