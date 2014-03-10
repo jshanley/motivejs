@@ -906,55 +906,55 @@ module.exports = function(name, regex, parsing_function) {
 "src/utilities/polyfills.js": function(module, exports, require){// Object.create()
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
 if (typeof Object.create !== 'function') {
-    (function() {
-        var F = function() {};
-        Object.create = function(o) {
-            if (arguments.length > 1) {
-                throw new Error('Second argument not supported');
-            }
-            if (o === null) {
-                throw new Error('Cannot set a null [[Prototype]]');
-            }
-            if (typeof o !== 'object') {
-                throw new TypeError('Argument must be an object');
-            }
-            F.prototype = o;
-            return new F();
-        };
-    })();
+  (function() {
+    var F = function() {};
+    Object.create = function(o) {
+      if (arguments.length > 1) {
+        throw new Error('Second argument not supported');
+      }
+      if (o === null) {
+        throw new Error('Cannot set a null [[Prototype]]');
+      }
+      if (typeof o !== 'object') {
+        throw new TypeError('Argument must be an object');
+      }
+      F.prototype = o;
+      return new F();
+    };
+  })();
 }
 
 // Array.prototype.indexOf()
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf#Polyfill
 if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function(searchElement, fromIndex) {
-        if (this === undefined || this === null) {
-            throw new TypeError('"this" is null or not defined');
-        }
+  Array.prototype.indexOf = function(searchElement, fromIndex) {
+    if (this === undefined || this === null) {
+      throw new TypeError('"this" is null or not defined');
+    }
 
-        var length = this.length >>> 0; // Hack to convert object.length to a UInt32
+    var length = this.length >>> 0; // Hack to convert object.length to a UInt32
 
-        fromIndex = +fromIndex || 0;
+    fromIndex = +fromIndex || 0;
 
-        if (Math.abs(fromIndex) === Infinity) {
-            fromIndex = 0;
-        }
+    if (Math.abs(fromIndex) === Infinity) {
+      fromIndex = 0;
+    }
 
-        if (fromIndex < 0) {
-            fromIndex += length;
-            if (fromIndex < 0) {
-                fromIndex = 0;
-            }
-        }
+    if (fromIndex < 0) {
+      fromIndex += length;
+      if (fromIndex < 0) {
+        fromIndex = 0;
+      }
+    }
 
-        for (; fromIndex < length; fromIndex++) {
-            if (this[fromIndex] === searchElement) {
-                return fromIndex;
-            }
-        }
+    for (; fromIndex < length; fromIndex++) {
+      if (this[fromIndex] === searchElement) {
+        return fromIndex;
+      }
+    }
 
-        return -1;
-    };
+    return -1;
+  };
 }
 
 // export true to allow checking that polyfills were loaded
@@ -980,37 +980,37 @@ module.exports = function(input, obj) {
     validate_i   = require('../regex/validation/interval_name');
 
 function transpose(note_name, direction, interval) {
-    if (direction !== 'up' && direction !== 'down') {
-        throw new Error('Transpose direction must be either "up" or "down".');
-    }
-    var parsed_n = validate_n(note_name).parse();
-    if (!parsed_n) {
-        throw new Error('Invalid note name.');
-    }
-    var parsed_i = validate_i(interval).parse();
-    if (!parsed_i) {
-        throw new Error('Invalid interval name.');
-    }
+  if (direction !== 'up' && direction !== 'down') {
+    throw new Error('Transpose direction must be either "up" or "down".');
+  }
+  var parsed_n = validate_n(note_name).parse();
+  if (!parsed_n) {
+    throw new Error('Invalid note name.');
+  }
+  var parsed_i = validate_i(interval).parse();
+  if (!parsed_i) {
+    throw new Error('Invalid interval name.');
+  }
 
-    var factor = direction === 'up' ? 1 : -1;
+  var factor = direction === 'up' ? 1 : -1;
 
-    var new_note_name = fifths.atIndex(
-      fifths.indexOf(parsed_n.step + parsed_n.accidental) +
-      (factor * intervals.indexOf(interval))
-    );
+  var new_note_name = fifths.atIndex(
+    fifths.indexOf(parsed_n.step + parsed_n.accidental) +
+    (factor * intervals.indexOf(interval))
+  );
 
-    // check if octave adjustment is needed
-    if (parsed_n.octave === null) {
-        return new_note_name;
-    }
-    
-    // octave adjustment
-    var new_octave = parsed_n.octave + (factor * Math.floor(parsed_i.size / 8));
-    var normalized_steps = parsed_i.size > 7 ? (parsed_i.size % 7) - 1 : parsed_i.size - 1;
-    if ((steps.indexOf(parsed_n.step) + normalized_steps) >= 7) {
-        new_octave += factor;
-    }
-    return new_note_name + new_octave.toString(10);
+  // check if octave adjustment is needed
+  if (parsed_n.octave === null) {
+    return new_note_name;
+  }
+
+  // octave adjustment
+  var new_octave = parsed_n.octave + (factor * Math.floor(parsed_i.size / 8));
+  var normalized_steps = parsed_i.size > 7 ? (parsed_i.size % 7) - 1 : parsed_i.size - 1;
+  if ((steps.indexOf(parsed_n.step) + normalized_steps) >= 7) {
+    new_octave += factor;
+  }
+  return new_note_name + new_octave.toString(10);
 }
 
 module.exports = transpose;
