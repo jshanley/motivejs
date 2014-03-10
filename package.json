@@ -2,22 +2,22 @@
   "name": "motive",
   "description": "JavaScript music theory library",
   "version": "0.1.0",
-  "homepage": "https://github.com/johnshanley/motivejs/",
+  "homepage": "http://jshanley.github.io/motivejs/",
   "author": {
     "name": "John Shanley",
-    "url": "https://github.com/johnshanley"
+    "url": "https://github.com/jshanley"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnshanley/motivejs.git"
+    "url": "https://github.com/jshanley/motivejs.git"
   },
   "bugs": {
-    "url": "https://github.com/johnshanley/motivejs/issues"
+    "url": "https://github.com/jshanley/motivejs/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/johnshanley/motivejs/blob/master/LICENSE-MIT"
+      "url": "https://github.com/jshanley/motivejs/blob/master/LICENSE-MIT"
     }
   ],
   "main": "index.js",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "grunt": "^0.4.2",
     "grunt-contrib-jshint": "~0.6.0",
-    "grunt-contrib-nodeunit": "~0.2.0",
+    "grunt-contrib-nodeunit": "~0.3.2",
     "grunt-contrib-watch": "~0.5.1",
     "grunt-contrib-gluejs": "0.0.4"
   }

@@ -10,7 +10,7 @@ module.exports = function(grunt) {
       options: {
         jshintrc: '.jshintrc'
       },
-      all: ['Gruntfile.js', 'src/*.js', 'src/**/*.js', 'test/*.js']
+      all: ['Gruntfile.js', 'src/**/*.js', 'test/*.js']
     },
 
     gluejs: {
@@ -24,19 +24,18 @@ module.exports = function(grunt) {
       }
     },
 
-    watch: {
-      jshint: {
-        files: ['<%= jshint.all %>'],
-        tasks: ['jshint:lint']
-      }
+    nodeunit: {
+      all: ['test/**/*_test.js']
     }
+
   });
 
   // Load npm plugins to provide necessary tasks.
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-gluejs');
+  grunt.loadNpmTasks('grunt-contrib-nodeunit');
 
   // Default to tasks to run with the "grunt" command.
-  grunt.registerTask('default', ['jshint', 'gluejs']);
+  grunt.registerTask('default', ['jshint', 'gluejs', 'nodeunit']);
+  grunt.registerTask('test', ['nodeunit']);
 };
