@@ -31,6 +31,7 @@ function Note(noteInput) {
 
   if (parsed.octave !== null) {
     this.name = parsed.step + parsed.accidental;
+    this.type = 'pitch';
     this.octave = parsed.octave;
     this.scientific = name;
     this.midi = pitch_names.indexOf(this.scientific);
@@ -49,20 +50,12 @@ var toNote = function(input) {
   }
 };
 
-// checks if a note object has an octave defined on it
-var octaveOn = function(obj) {
-  if (typeof obj.octave === 'undefined' || obj.octave === null) {
-    return false;
-  }
-  return true;
-};
-
 Note.prototype.isEquivalent = function(other) {
   other = toNote(other);
   if (this.name !== other.name) {
     return false;
   }
-  if (octaveOn(this) && octaveOn(other) && (this.octave !== other.octave)) {
+  if (this.type === 'pitch' && other.type === 'pitch' && this.octave !== other.octave) {
     return false;
   }
   return true;
@@ -72,7 +65,7 @@ Note.prototype.isEnharmonic = function(other) {
   if (this.pitchClass !== other.pitchClass) {
     return false;
   }
-  if (octaveOn(this) && octaveOn(other) && (Math.abs(this.midi - other.midi) > 11)) {
+  if (this.type === 'pitch' && other.type === 'pitch' && (Math.abs(this.midi - other.midi) > 11)) {
     return false;
   }
   return true;
@@ -85,9 +78,10 @@ Note.prototype.setOctave = function(octave) {
   this.scientific = this.name + octave.toString(10);
   this.midi = pitch_names.indexOf(this.scientific);
   this.frequency = mtof(this.midi);
+  this.type = 'pitch';
 };
 Note.prototype.transpose = function(direction, interval) {
-  return new Note(transpose(octaveOn(this) ? this.scientific : this.name, direction, interval));
+  return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
 };
 Note.prototype.intervalTo = function(note) {
   note = toNote(note);
