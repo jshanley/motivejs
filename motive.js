@@ -111,6 +111,7 @@ function JazzChord(chord_name) {
   var memberIntervals = applyAlterations(speciesIntervals, parsed.alterations);
 
   this.name = chord_name;
+  this.type = 'chord';
   this.root = note(parsed.root);
   this.formula = parsed.species + parsed.alterations;
   this.isSlash = parsed.slash === '/' ? true : false;
@@ -234,6 +235,7 @@ var Interval = function(interval_name) {
   var normalizedSize = parsed.size > 7 ? (this.steps % 7) + 1 : parsed.size;
 
   this.name = interval_name;
+  this.type = 'interval';
   this.quality = parsed.quality;
   this.size = parsed.size;
   this.normalized = this.quality + normalizedSize.toString(10);
@@ -330,6 +332,7 @@ function Note(noteInput) {
   }
 
   this.name = name;
+  this.type = 'note';
   this.pitchClass = pitch_names.indexOf(parsed.step + parsed.accidental);
 
   this.parts = {
@@ -339,6 +342,7 @@ function Note(noteInput) {
 
   if (parsed.octave !== null) {
     this.name = parsed.step + parsed.accidental;
+    this.type = 'pitch';
     this.octave = parsed.octave;
     this.scientific = name;
     this.midi = pitch_names.indexOf(this.scientific);
@@ -357,20 +361,12 @@ var toNote = function(input) {
   }
 };
 
-// checks if a note object has an octave defined on it
-var octaveOn = function(obj) {
-  if (typeof obj.octave === 'undefined' || obj.octave === null) {
-    return false;
-  }
-  return true;
-};
-
 Note.prototype.isEquivalent = function(other) {
   other = toNote(other);
   if (this.name !== other.name) {
     return false;
   }
-  if (octaveOn(this) && octaveOn(other) && (this.octave !== other.octave)) {
+  if (this.type === 'pitch' && other.type === 'pitch' && this.octave !== other.octave) {
     return false;
   }
   return true;
@@ -380,7 +376,7 @@ Note.prototype.isEnharmonic = function(other) {
   if (this.pitchClass !== other.pitchClass) {
     return false;
   }
-  if (octaveOn(this) && octaveOn(other) && (Math.abs(this.midi - other.midi) > 11)) {
+  if (this.type === 'pitch' && other.type === 'pitch' && (Math.abs(this.midi - other.midi) > 11)) {
     return false;
   }
   return true;
@@ -393,9 +389,10 @@ Note.prototype.setOctave = function(octave) {
   this.scientific = this.name + octave.toString(10);
   this.midi = pitch_names.indexOf(this.scientific);
   this.frequency = mtof(this.midi);
+  this.type = 'pitch';
 };
 Note.prototype.transpose = function(direction, interval) {
-  return new Note(transpose(octaveOn(this) ? this.scientific : this.name, direction, interval));
+  return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
 };
 Note.prototype.intervalTo = function(note) {
   note = toNote(note);
@@ -547,25 +544,32 @@ module.exports = (function() {
 },
 "src/palette/palette.js": function(module, exports, require){function Palette(item) {
   this.notes = [];
+  this.type = 'palette';
   if (typeof item !== 'undefined') {
     this.add(item);
   }
 }
 Palette.prototype.add = function(item) {
-  for (var i = 0; i < item.notes.length; i++) {
-    var inThis = false;
-    for (var t = 0; t < this.notes.length; t++) {
-      if (this.notes[t].isEquivalent(item.notes[i])) {
-        inThis = true;
-        break;
-      }
+  if (item.type === 'note') {
+    this.notes.push(item);
+    return;
+  }
+  if (item.type === 'chord') {
+    for (var i = 0; i < item.notes.length; i++) {
+     var inThis = false;
+     for (var t = 0; t < this.notes.length; t++) {
+       if (this.notes[t].isEquivalent(item.notes[i])) {
+         inThis = true;
+         break;
+       }
+     }
+     if (!inThis) {
+       this.notes.push(item.notes[i]);
+     }
     }
-    if (!inThis) {
-      this.notes.push(item.notes[i]);
-    }
+    return;
   }
 };
-
 
 module.exports = function(item) {
   return new Palette(item);
