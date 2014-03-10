@@ -5,18 +5,18 @@ var Circle              = require('../math/circle'),
 
 var fifths = new Circle(['F','C','G','D','A','E','B']);
 fifths.indexOf = function(note_name) {
-    var step = note_name[0],
-        accidental = note_name.slice(1),
-        alter = accidentalToAlter(accidental);
-    var index = this.array.indexOf(step);
-    index = index + (this.size * alter);
-    return index;
+  var step = note_name[0],
+      accidental = note_name.slice(1),
+      alter = accidentalToAlter(accidental);
+  var index = this.array.indexOf(step);
+  index = index + (this.size * alter);
+  return index;
 };
 fifths.atIndex = function(index) {
-    var alter = Math.floor(index / this.array.length),
-        accidental = alterToAccidental(alter);
-    index = modulo.modulo(index, this.size);
-    return this.array[index] + accidental;
+  var alter = Math.floor(index / this.array.length),
+      accidental = alterToAccidental(alter);
+  index = modulo.modulo(index, this.size);
+  return this.array[index] + accidental;
 };
 
 module.exports = fifths;
