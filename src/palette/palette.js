@@ -27,7 +27,6 @@ Palette.prototype.add = function(item) {
   }
 };
 
-
 module.exports = function(item) {
   return new Palette(item);
 };
