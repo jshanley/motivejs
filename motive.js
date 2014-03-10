@@ -298,10 +298,7 @@ module.exports = {
   mod12: mod12
 };
 },
-"src/motive.js": function(module, exports, require){// load polyfills
-require('./utilities/polyfills');
-
-// this will be the global object
+"src/motive.js": function(module, exports, require){// this will be the global object
 module.exports = {
   note: require('./note/note'),
   chord: require('./chord/jazz'),
@@ -906,63 +903,6 @@ module.exports = function(name, regex, parsing_function) {
     };
   };
 };
-},
-"src/utilities/polyfills.js": function(module, exports, require){// Object.create()
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create#Polyfill
-if (typeof Object.create !== 'function') {
-  (function() {
-    var F = function() {};
-    Object.create = function(o) {
-      if (arguments.length > 1) {
-        throw new Error('Second argument not supported');
-      }
-      if (o === null) {
-        throw new Error('Cannot set a null [[Prototype]]');
-      }
-      if (typeof o !== 'object') {
-        throw new TypeError('Argument must be an object');
-      }
-      F.prototype = o;
-      return new F();
-    };
-  })();
-}
-
-// Array.prototype.indexOf()
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf#Polyfill
-if (!Array.prototype.indexOf) {
-  Array.prototype.indexOf = function(searchElement, fromIndex) {
-    if (this === undefined || this === null) {
-      throw new TypeError('"this" is null or not defined');
-    }
-
-    var length = this.length >>> 0; // Hack to convert object.length to a UInt32
-
-    fromIndex = +fromIndex || 0;
-
-    if (Math.abs(fromIndex) === Infinity) {
-      fromIndex = 0;
-    }
-
-    if (fromIndex < 0) {
-      fromIndex += length;
-      if (fromIndex < 0) {
-        fromIndex = 0;
-      }
-    }
-
-    for (; fromIndex < length; fromIndex++) {
-      if (this[fromIndex] === searchElement) {
-        return fromIndex;
-      }
-    }
-
-    return -1;
-  };
-}
-
-// export true to allow checking that polyfills were loaded
-module.exports = true;
 },
 "src/utilities/to_object.js": function(module, exports, require){// ensures that a function requiring a note (or similar type of) object as input
 //   gets an object rather than a string representation of it.

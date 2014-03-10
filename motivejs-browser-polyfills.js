@@ -51,6 +51,3 @@ if (!Array.prototype.indexOf) {
     return -1;
   };
 }
-
-// export true to allow checking that polyfills were loaded
-module.exports = true;
