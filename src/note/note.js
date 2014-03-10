@@ -21,6 +21,7 @@ function Note(noteInput) {
   }
 
   this.name = name;
+  this.type = 'note';
   this.pitchClass = pitch_names.indexOf(parsed.step + parsed.accidental);
 
   this.parts = {

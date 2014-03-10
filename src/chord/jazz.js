@@ -16,6 +16,7 @@ function JazzChord(chord_name) {
   var memberIntervals = applyAlterations(speciesIntervals, parsed.alterations);
 
   this.name = chord_name;
+  this.type = 'chord';
   this.root = note(parsed.root);
   this.formula = parsed.species + parsed.alterations;
   this.isSlash = parsed.slash === '/' ? true : false;

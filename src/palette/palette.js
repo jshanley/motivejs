@@ -1,5 +1,6 @@
 function Palette(item) {
   this.notes = [];
+  this.type = 'palette';
   if (typeof item !== 'undefined') {
     this.add(item);
   }

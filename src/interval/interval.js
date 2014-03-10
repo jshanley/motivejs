@@ -58,6 +58,7 @@ var Interval = function(interval_name) {
   var normalizedSize = parsed.size > 7 ? (this.steps % 7) + 1 : parsed.size;
 
   this.name = interval_name;
+  this.type = 'interval';
   this.quality = parsed.quality;
   this.size = parsed.size;
   this.normalized = this.quality + normalizedSize.toString(10);
