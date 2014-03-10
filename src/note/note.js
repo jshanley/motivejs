@@ -1,11 +1,13 @@
 var validate        = require('../regex/validation/note_name'),
     pitch_names     = require('../primitives/pitch_names'),
+    fifths          = require('../primitives/fifths'),
+    intervals       = require('../primitives/intervals'),
     mtof            = require('../convert/mtof'),
     transpose       = require('../utilities/transpose');
 
 function Note(noteInput) {
   var name;
-  if (typeof noteInput ==='string') {
+  if (typeof noteInput === 'string') {
     name = noteInput;
   } else if (typeof noteInput === 'number') {
     name = pitch_names.atIndex(noteInput);
@@ -85,6 +87,14 @@ Note.prototype.setOctave = function(octave) {
 };
 Note.prototype.transpose = function(direction, interval) {
   return new Note(transpose(octaveOn(this) ? this.scientific : this.name, direction, interval));
+};
+Note.prototype.intervalTo = function(note) {
+  note = toNote(note);
+  return intervals.atIndex(fifths.indexOf(note.name) - fifths.indexOf(this.name));
+};
+Note.prototype.intervalFrom = function(note) {
+  note = toNote(note);
+  return intervals.atIndex(fifths.indexOf(this.name) - fifths.indexOf(note.name));
 };
 Note.prototype.up = function(interval) {
   return this.transpose('up', interval);
