@@ -20,14 +20,14 @@ module.exports = function(grunt) {
       },
       files: {
         src: ['src/*.js', 'src/**/*.js'],
-        dest: 'browser-build/motive.js'
+        dest: 'standalone/motive.js'
       }
     },
 
     uglify: {
       browser_build: {
         files: {
-          'browser-build/motive.min.js': ['browser-build/motive.js']
+          'standalone/motive.min.js': ['standalone/motive.js']
         }
       }
     },
