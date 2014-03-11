@@ -1,6 +1,46 @@
-(function(){function require(e,t){for(var n=[],r=e.split("/"),i,s,o=0;(s=r[o++])!=null;)".."==s?n.pop():"."!=s&&n.push(s);n=n.join("/"),o=require,s=o.m[t||0],i=s[n+".js"]||s[n+"/index.js"]||s[n],r='Cannot require("'+n+'")';if(!i)throw Error(r);if(s=i.c)i=o.m[t=s][e=i.m];if(!i)throw Error(r);return i.exports||i(i,i.exports={},function(n){return o("."!=n.charAt(0)?n:e+"/../"+n,t)}),i.exports};
-require.m = [];
-require.m[0] = { "src/chord/get_species_intervals.js": function(module, exports, require){module.exports = (function(){
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.motive=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+module.exports={
+  "name": "motive",
+  "description": "JavaScript music theory library",
+  "version": "0.1.1",
+  "homepage": "http://jshanley.github.io/motivejs/",
+  "author": {
+    "name": "John Shanley",
+    "url": "https://github.com/jshanley"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jshanley/motivejs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jshanley/motivejs/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jshanley/motivejs/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.2",
+    "grunt-contrib-jshint": "~0.6.0",
+    "grunt-contrib-nodeunit": "~0.3.2",
+    "grunt-contrib-watch": "~0.5.1",
+    "grunt-contrib-uglify": "~0.4.0",
+    "browserify": "~3.32.1",
+    "grunt-browserify": "~1.3.1"
+  }
+}
+
+},{}],2:[function(_dereq_,module,exports){
+module.exports = (function(){
 
   var basic_types = {
     five: ['R','P5'],
@@ -92,13 +132,14 @@ require.m[0] = { "src/chord/get_species_intervals.js": function(module, exports,
   };
 
 })();
-},
-"src/chord/jazz.js": function(module, exports, require){var validate                = require('../regex/validation/chord_name'),
-    note                    = require('../note/note'),
-    transpose               = require('../utilities/transpose'),
-    getSpeciesIntervals     = require('./get_species_intervals'),
-    applyAlterations        = require('../palette/apply_alterations'),
-    getNotesFromIntervals   = require('../palette/get_notes_from_interval_array');
+
+},{}],3:[function(_dereq_,module,exports){
+var validate                = _dereq_('../regex/validation/chord_name'),
+    note                    = _dereq_('../note/note'),
+    transpose               = _dereq_('../utilities/transpose'),
+    getSpeciesIntervals     = _dereq_('./get_species_intervals'),
+    applyAlterations        = _dereq_('../palette/apply_alterations'),
+    getNotesFromIntervals   = _dereq_('../palette/get_notes_from_interval_array');
 
 
 function JazzChord(chord_name) {
@@ -127,8 +168,9 @@ JazzChord.prototype.transpose = function(direction, interval) {
 module.exports = function(chord_name) {
   return new JazzChord(chord_name);
 };
-},
-"src/convert/accidental_to_alter.js": function(module, exports, require){var operators = require('../primitives/operators');
+
+},{"../note/note":11,"../palette/apply_alterations":12,"../palette/get_notes_from_interval_array":13,"../regex/validation/chord_name":22,"../utilities/transpose":26,"./get_species_intervals":2}],4:[function(_dereq_,module,exports){
+var operators = _dereq_('../primitives/operators');
 
 function accidentalToAlter(accidental) {
   if (!accidental) {
@@ -144,8 +186,9 @@ var totalSymbolValue = 0;
 }
 
 module.exports = accidentalToAlter;
-},
-"src/convert/alter_to_accidental.js": function(module, exports, require){function alterToAccidental (alter) {
+
+},{"../primitives/operators":18}],5:[function(_dereq_,module,exports){
+function alterToAccidental (alter) {
   if (typeof alter === 'undefined') {
     throw new Error('Cannot convert alter to accidental, none given.');
   }
@@ -169,13 +212,15 @@ module.exports = accidentalToAlter;
 }
 
 module.exports = alterToAccidental;
-},
-"src/convert/mtof.js": function(module, exports, require){// midi to frequency (Hz)
+
+},{}],6:[function(_dereq_,module,exports){
+// midi to frequency (Hz)
 module.exports = function mtof(midi) {
   return Math.pow(2, ((midi - 69) / 12)) * 440;
 };
-},
-"src/interval/interval.js": function(module, exports, require){var validate = require('../regex/validation/interval_name');
+
+},{}],7:[function(_dereq_,module,exports){
+var validate = _dereq_('../regex/validation/interval_name');
 
 // semitones from root of each note of the major scale
 var major = [0,2,4,5,7,9,11];
@@ -256,8 +301,9 @@ var Interval = function(interval_name) {
 module.exports = function(interval_name) {
   return new Interval(interval_name);
 };
-},
-"src/math/circle.js": function(module, exports, require){var modulo = require('./modulo').modulo;
+
+},{"../regex/validation/interval_name":23}],8:[function(_dereq_,module,exports){
+var modulo = _dereq_('./modulo').modulo;
 
 var Circle = function(array) {
   this.array = array;
@@ -277,8 +323,9 @@ Circle.prototype.atIndex = function(index) {
 };
 
 module.exports = Circle;
-},
-"src/math/modulo.js": function(module, exports, require){function modulo(a, b) {
+
+},{"./modulo":9}],9:[function(_dereq_,module,exports){
+function modulo(a, b) {
   if (a >= 0) {
     return a % b;
   } else {
@@ -297,22 +344,24 @@ module.exports = {
   mod7: mod7,
   mod12: mod12
 };
-},
-"src/motive.js": function(module, exports, require){// this will be the global object
+
+},{}],10:[function(_dereq_,module,exports){
+// this will be the global object
 module.exports = {
-  version: require('../package.json').version,
-  note: require('./note/note'),
-  chord: require('./chord/jazz'),
-  interval: require('./interval/interval'),
-  palette: require('./palette/palette')
+  version: _dereq_('../package.json').version,
+  note: _dereq_('./note/note'),
+  chord: _dereq_('./chord/jazz'),
+  interval: _dereq_('./interval/interval'),
+  palette: _dereq_('./palette/palette')
 };
-},
-"src/note/note.js": function(module, exports, require){var validate        = require('../regex/validation/note_name'),
-    pitch_names     = require('../primitives/pitch_names'),
-    fifths          = require('../primitives/fifths'),
-    intervals       = require('../primitives/intervals'),
-    mtof            = require('../convert/mtof'),
-    transpose       = require('../utilities/transpose');
+
+},{"../package.json":1,"./chord/jazz":3,"./interval/interval":7,"./note/note":11,"./palette/palette":14}],11:[function(_dereq_,module,exports){
+var validate        = _dereq_('../regex/validation/note_name'),
+    pitch_names     = _dereq_('../primitives/pitch_names'),
+    fifths          = _dereq_('../primitives/fifths'),
+    intervals       = _dereq_('../primitives/intervals'),
+    mtof            = _dereq_('../convert/mtof'),
+    transpose       = _dereq_('../utilities/transpose');
 
 function Note(noteInput) {
   var name;
@@ -413,9 +462,10 @@ Note.prototype.toString = function() {
 module.exports = function(noteInput) {
   return new Note(noteInput);
 };
-},
-"src/palette/apply_alterations.js": function(module, exports, require){var splitStringByPattern = require('../regex/split_string_by_pattern'),
-    ParsedIntervalArray  = require('./parsed_interval_array');
+
+},{"../convert/mtof":6,"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/pitch_names":19,"../regex/validation/note_name":24,"../utilities/transpose":26}],12:[function(_dereq_,module,exports){
+var splitStringByPattern = _dereq_('../regex/split_string_by_pattern'),
+    ParsedIntervalArray  = _dereq_('./parsed_interval_array');
 
 
 module.exports = (function() {
@@ -525,8 +575,9 @@ module.exports = (function() {
     return pia.unparse();
   };
 })();
-},
-"src/palette/get_notes_from_interval_array.js": function(module, exports, require){module.exports = (function() {
+
+},{"../regex/split_string_by_pattern":21,"./parsed_interval_array":15}],13:[function(_dereq_,module,exports){
+module.exports = (function() {
   return function(interval_array, root) {
     var output = [];
     for (var i = 0; i < interval_array.length; i++) {
@@ -539,8 +590,9 @@ module.exports = (function() {
     return output;
   };
 })();
-},
-"src/palette/palette.js": function(module, exports, require){function Palette(item) {
+
+},{}],14:[function(_dereq_,module,exports){
+function Palette(item) {
   this.notes = [];
   this.type = 'palette';
   if (typeof item !== 'undefined') {
@@ -572,8 +624,9 @@ Palette.prototype.add = function(item) {
 module.exports = function(item) {
   return new Palette(item);
 };
-},
-"src/palette/parsed_interval_array.js": function(module, exports, require){var validate = require('../regex/validation/interval_name');
+
+},{}],15:[function(_dereq_,module,exports){
+var validate = _dereq_('../regex/validation/interval_name');
 
 function piaCompare(a,b) {
   var qualities = ['d','m','P','M','A'];
@@ -652,11 +705,12 @@ ParsedIntervalArray.prototype.unparse = function() {
 };
 
 module.exports = ParsedIntervalArray;
-},
-"src/primitives/fifths.js": function(module, exports, require){var Circle              = require('../math/circle'),
-    modulo              = require('../math/modulo'),
-    alterToAccidental   = require('../convert/alter_to_accidental'),
-    accidentalToAlter   = require('../convert/accidental_to_alter');
+
+},{"../regex/validation/interval_name":23}],16:[function(_dereq_,module,exports){
+var Circle              = _dereq_('../math/circle'),
+    modulo              = _dereq_('../math/modulo'),
+    alterToAccidental   = _dereq_('../convert/alter_to_accidental'),
+    accidentalToAlter   = _dereq_('../convert/accidental_to_alter');
 
 var fifths = new Circle(['F','C','G','D','A','E','B']);
 fifths.indexOf = function(note_name) {
@@ -675,10 +729,11 @@ fifths.atIndex = function(index) {
 };
 
 module.exports = fifths;
-},
-"src/primitives/intervals.js": function(module, exports, require){var Circle   = require('../math/circle'),
-    modulo   = require('../math/modulo'),
-    validate = require('../regex/validation/interval_name');
+
+},{"../convert/accidental_to_alter":4,"../convert/alter_to_accidental":5,"../math/circle":8,"../math/modulo":9}],17:[function(_dereq_,module,exports){
+var Circle   = _dereq_('../math/circle'),
+    modulo   = _dereq_('../math/modulo'),
+    validate = _dereq_('../regex/validation/interval_name');
 
 // these values represent the size of intervals arranged by fifths.
 // Given 4, each value is value[i] = mod7(value[i-1] + 4) with
@@ -766,17 +821,19 @@ intervals.atIndex = function(index) {
 };
 
 module.exports = intervals;
-},
-"src/primitives/operators.js": function(module, exports, require){module.exports = {
+
+},{"../math/circle":8,"../math/modulo":9,"../regex/validation/interval_name":23}],18:[function(_dereq_,module,exports){
+module.exports = {
   'b': -1,
   '#': 1,
   'x': 2
 };
-},
-"src/primitives/pitch_names.js": function(module, exports, require){var Circle              = require('../math/circle'),
-    modulo              = require('../math/modulo'),
-    accidentalToAlter   = require('../convert/accidental_to_alter'),
-    validate            = require('../regex/validation/note_name');
+
+},{}],19:[function(_dereq_,module,exports){
+var Circle              = _dereq_('../math/circle'),
+    modulo              = _dereq_('../math/modulo'),
+    accidentalToAlter   = _dereq_('../convert/accidental_to_alter'),
+    validate            = _dereq_('../regex/validation/note_name');
 
 var pitch_names = new Circle(['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B']);
 
@@ -801,9 +858,11 @@ pitch_names.atIndex = function(index) {
 };
 
 module.exports = pitch_names;
-},
-"src/primitives/steps.js": function(module, exports, require){module.exports = ['C','D','E','F','G','A','B'];},
-"src/regex/split_string_by_pattern.js": function(module, exports, require){module.exports = function(str, pattern) {
+
+},{"../convert/accidental_to_alter":4,"../math/circle":8,"../math/modulo":9,"../regex/validation/note_name":24}],20:[function(_dereq_,module,exports){
+module.exports = ['C','D','E','F','G','A','B'];
+},{}],21:[function(_dereq_,module,exports){
+module.exports = function(str, pattern) {
   var output = [];
   while(pattern.test(str)) {
     var thisMatch = str.match(pattern);
@@ -812,8 +871,9 @@ module.exports = pitch_names;
   }
   return output;
 };
-},
-"src/regex/validation/chord_name.js": function(module, exports, require){var makeValidation = require('./validation_factory');
+
+},{}],22:[function(_dereq_,module,exports){
+var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
 
@@ -851,8 +911,9 @@ var validation = (function() {
 module.exports = function(chord_name) {
   return validation(chord_name);
 };
-},
-"src/regex/validation/interval_name.js": function(module, exports, require){var makeValidation = require('./validation_factory');
+
+},{"./validation_factory":25}],23:[function(_dereq_,module,exports){
+var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
 
@@ -869,8 +930,9 @@ var validation = (function() {
 module.exports = function(interval_name) {
   return validation(interval_name);
 };
-},
-"src/regex/validation/note_name.js": function(module, exports, require){var makeValidation = require('./validation_factory');
+
+},{"./validation_factory":25}],24:[function(_dereq_,module,exports){
+var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function(){
 
@@ -888,8 +950,9 @@ var validation = (function(){
 module.exports = function(note_name) {
   return validation(note_name);
 };
-},
-"src/regex/validation/validation_factory.js": function(module, exports, require){// this makes a validation function for a string type defined by 'name'
+
+},{"./validation_factory":25}],25:[function(_dereq_,module,exports){
+// this makes a validation function for a string type defined by 'name'
 module.exports = function(name, regex, parsing_function) {
   return function(input) {
     if (typeof input !== 'string') {
@@ -910,25 +973,13 @@ module.exports = function(name, regex, parsing_function) {
     };
   };
 };
-},
-"src/utilities/to_object.js": function(module, exports, require){// ensures that a function requiring a note (or similar type of) object as input
-//   gets an object rather than a string representation of it.
-//   'obj' will be the function used to create the object.
-module.exports = function(input, obj) {
-  if (typeof input === 'string') {
-    input = obj(input);
-  }
-  if (typeof input !== 'object') {
-    throw new TypeError('Input must be an object or string.');
-  }
-  return input;
-};
-},
-"src/utilities/transpose.js": function(module, exports, require){var intervals    = require('../primitives/intervals'),
-    fifths       = require('../primitives/fifths'),
-    steps        = require('../primitives/steps'),
-    validate_n   = require('../regex/validation/note_name'),
-    validate_i   = require('../regex/validation/interval_name');
+
+},{}],26:[function(_dereq_,module,exports){
+var intervals    = _dereq_('../primitives/intervals'),
+    fifths       = _dereq_('../primitives/fifths'),
+    steps        = _dereq_('../primitives/steps'),
+    validate_n   = _dereq_('../regex/validation/note_name'),
+    validate_i   = _dereq_('../regex/validation/interval_name');
 
 function transpose(note_name, direction, interval) {
   if (direction !== 'up' && direction !== 'down') {
@@ -965,6 +1016,7 @@ function transpose(note_name, direction, interval) {
 }
 
 module.exports = transpose;
-}};
-motive = require('src/motive.js');
-}());
+
+},{"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/steps":20,"../regex/validation/interval_name":23,"../regex/validation/note_name":24}]},{},[10])
+(10)
+});
