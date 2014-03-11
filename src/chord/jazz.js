@@ -2,9 +2,16 @@ var validate                = require('../regex/validation/chord_name'),
     note                    = require('../note/note'),
     transpose               = require('../utilities/transpose'),
     getSpeciesIntervals     = require('./get_species_intervals'),
-    applyAlterations        = require('../palette/apply_alterations'),
-    getNotesFromIntervals   = require('../palette/get_notes_from_interval_array');
+    applyAlterations        = require('../palette/apply_alterations');
 
+function getNotes(intervals, root) {
+  var output = [];
+  output.push(root);
+  for (var i = 1; i < intervals.length; i++) {
+    output.push(root.up(intervals[i]));
+  }
+  return output;
+}
 
 function JazzChord(chord_name) {
   var parsed = validate(chord_name).parse();
@@ -22,7 +29,7 @@ function JazzChord(chord_name) {
   this.isSlash = parsed.slash === '/' ? true : false;
   this.bass = this.isSlash ? note(parsed.bass) : this.root;
   this.intervals = memberIntervals;
-  this.notes = getNotesFromIntervals(this.intervals, this.root);
+  this.notes = getNotes(this.intervals, this.root);
 }
 
 JazzChord.prototype.transpose = function(direction, interval) {
