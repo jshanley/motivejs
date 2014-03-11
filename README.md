@@ -26,6 +26,7 @@ _TODO: make an AMD build for use with RequireJS_
 _create a note:_
 ```javascript
 var myNote = motive.note('Bb');
+
 myNote.type;               // 'note'
 myNote.pitchClass;         // 10
 myNote.isEnharmonic('A#'); // true
@@ -36,6 +37,7 @@ myNote.intervalTo('C');    // 'M2'
 _set the note's octave to make it a pitch:_
 ```javascript
 myNote.setOctave(3);
+
 myNote.type;           // 'pitch'
 myNote.midi;           // 58
 myNote.frequency;      // 233.0818....
@@ -52,6 +54,7 @@ otherNote.octave;      // 4
 _create a chord:_
 ```javascript
 var myChord = motive.chord('Dm7');
+
 myChord.root.name;     // 'D'
 myChord.intervals;     // [ 'R', 'm3', 'P5', 'm7' ]
 myChord.notes;         // [ 'D', 'F', 'A', 'C' ]
