@@ -300,6 +300,7 @@ module.exports = {
 },
 "src/motive.js": function(module, exports, require){// this will be the global object
 module.exports = {
+  version: require('../package.json').version,
   note: require('./note/note'),
   chord: require('./chord/jazz'),
   interval: require('./interval/interval'),
@@ -679,6 +680,12 @@ module.exports = fifths;
     modulo   = require('../math/modulo'),
     validate = require('../regex/validation/interval_name');
 
+// these values represent the size of intervals arranged by fifths.
+// Given 4, each value is value[i] = mod7(value[i-1] + 4) with
+//   the exception that zero is avoided by setting mod7(7) = 7
+
+// TODO starting with 4 seems arbitrary, can this be adjusted to start with 1
+//   as index 0, and put 4 on the end as index -1
 var intervals = new Circle([4,1,5,2,6,3,7]);
 intervals.indexOf = function(interval_name) {
 
