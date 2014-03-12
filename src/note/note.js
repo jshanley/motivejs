@@ -3,6 +3,7 @@ var validate        = require('../regex/validation/note_name'),
     fifths          = require('../primitives/fifths'),
     intervals       = require('../primitives/intervals'),
     mtof            = require('../convert/mtof'),
+    scientificToAbc = require('../convert/notation/abc/scientific_to_abc'),
     transpose       = require('../utilities/transpose');
 
 function Note(noteInput) {
@@ -30,12 +31,7 @@ function Note(noteInput) {
   };
 
   if (parsed.octave !== null) {
-    this.name = parsed.step + parsed.accidental;
-    this.type = 'pitch';
-    this.octave = parsed.octave;
-    this.scientific = name;
-    this.midi = pitch_names.indexOf(this.scientific);
-    this.frequency = mtof(this.midi);
+    this.setOctave(parsed.octave);
   }
 
   return this;
@@ -49,7 +45,18 @@ var toNote = function(input) {
     return input;
   }
 };
-
+Note.prototype.setOctave = function(octave) {
+  if (typeof octave !== 'number') {
+    throw new TypeError('Octave must be a number.');
+  }
+  this.name = this.parts.step + this.parts.accidental;
+  this.type = 'pitch';
+  this.octave = octave;
+  this.scientific = this.name + octave.toString(10);
+  this.abc = scientificToAbc(this.scientific);
+  this.midi = pitch_names.indexOf(this.scientific);
+  this.frequency = mtof(this.midi);
+};
 Note.prototype.isEquivalent = function(other) {
   other = toNote(other);
   if (this.name !== other.name) {
@@ -69,16 +76,6 @@ Note.prototype.isEnharmonic = function(other) {
     return false;
   }
   return true;
-};
-Note.prototype.setOctave = function(octave) {
-  if (typeof octave !== 'number') {
-    throw new TypeError('Octave must be a number.');
-  }
-  this.octave = octave;
-  this.scientific = this.name + octave.toString(10);
-  this.midi = pitch_names.indexOf(this.scientific);
-  this.frequency = mtof(this.midi);
-  this.type = 'pitch';
 };
 Note.prototype.transpose = function(direction, interval) {
   return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
