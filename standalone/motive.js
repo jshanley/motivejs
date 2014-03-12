@@ -2,7 +2,7 @@
 module.exports={
   "name": "motive",
   "description": "JavaScript music theory library",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "homepage": "http://jshanley.github.io/motivejs/",
   "author": {
     "name": "John Shanley",
@@ -176,7 +176,7 @@ module.exports = function(chord_name) {
   return new JazzChord(chord_name);
 };
 
-},{"../note/note":12,"../palette/apply_alterations":13,"../regex/validation/chord_name":23,"../utilities/transpose":27,"./get_species_intervals":2}],4:[function(_dereq_,module,exports){
+},{"../note/note":15,"../palette/apply_alterations":16,"../regex/validation/chord_name":26,"../utilities/transpose":30,"./get_species_intervals":2}],4:[function(_dereq_,module,exports){
 var operators = _dereq_('../primitives/operators');
 
 function accidentalToAlter(accidental) {
@@ -194,7 +194,7 @@ var totalSymbolValue = 0;
 
 module.exports = accidentalToAlter;
 
-},{"../primitives/operators":18}],5:[function(_dereq_,module,exports){
+},{"../primitives/operators":21}],5:[function(_dereq_,module,exports){
 function alterToAccidental (alter) {
   if (typeof alter === 'undefined') {
     throw new Error('Cannot convert alter to accidental, none given.');
@@ -227,6 +227,121 @@ module.exports = function mtof(midi) {
 };
 
 },{}],7:[function(_dereq_,module,exports){
+var validateInput = _dereq_('../../../regex/validation/abc_note_name'),
+    validateOutput = _dereq_('../../../regex/validation/note_name'),
+    alterToAccidental = _dereq_('../../alter_to_accidental');
+
+// abc notation symbols
+var accidentals = _dereq_('./symbols').accidentals,
+    adjustments = _dereq_('./symbols').adjustments;
+
+module.exports = function(abcInput) {
+  var parsed = validateInput(abcInput).parse();
+  if (!parsed) {
+    throw new Error('Cannot convert ABC to scientific notation. Invalid ABC note name.');
+  }
+
+  var step,
+      alter = 0,
+      accidental,
+      octave;
+
+  // if parsed step is a capital letter
+  if (/[A-G]/.test(parsed.step)) {
+    octave = 4;
+  } else { // parsed step is lowercase
+    octave = 5;
+  }
+
+  // get the total alter value of all accidentals present
+  for (var c = 0; c < parsed.accidental.length; c++) {
+    alter += accidentals[parsed.accidental[c]];
+  }
+
+  // for each comma or apostrophe adjustment, adjust the octave value
+  for (var d = 0; d < parsed.adjustments.length; d++) {
+    octave += adjustments[parsed.adjustments[d]];
+  }
+
+  step = parsed.step.toUpperCase();
+  accidental = alterToAccidental(alter);
+
+  var output = step + accidental + octave.toString(10);
+  if (!validateOutput(output).valid) {
+    throw new Error('Something went wrong converting ABC to scientific notation. Output invalid.');
+  }
+  return output;
+};
+
+},{"../../../regex/validation/abc_note_name":25,"../../../regex/validation/note_name":28,"../../alter_to_accidental":5,"./symbols":9}],8:[function(_dereq_,module,exports){
+var validateInput = _dereq_('../../../regex/validation/note_name'),
+    validateOutput = _dereq_('../../../regex/validation/abc_note_name'),
+    accidentalToAlter = _dereq_('../../accidental_to_alter');
+
+module.exports = function(scientific) {
+  var parsed = validateInput(scientific).parse();
+  if (!parsed || parsed.octave === null) {
+    throw new Error('Cannot convert scientific to ABC. Invalid scientific note name.');
+  }
+
+  var abc_accidental = '',
+      abc_step,
+      abc_octave = '';
+
+  var alter = accidentalToAlter(parsed.accidental);
+
+  // add abc accidental symbols until alter is consumed (alter === 0)
+  while(alter < 0) {
+    abc_accidental += '_';
+    alter += 1;
+  }
+  while(alter > 0) {
+    abc_accidental += '^';
+    alter -= 1;
+  }
+
+  // step must be lowercase for octaves above 5
+  // add apostrophes or commas to get abc_octave
+  //   to the correct value
+  var o = parsed.octave;
+  if (o >= 5) {
+    abc_step = parsed.step.toLowerCase();
+    for( ; o > 5; o--) {
+      abc_octave += '\'';
+    }
+  } else {
+    abc_step = parsed.step.toUpperCase();
+    for( ; o < 4; o++) {
+      abc_octave += ',';
+    }
+  }
+
+  var output = abc_accidental + abc_step + abc_octave;
+  if (!validateOutput(output).valid) {
+    throw new Error('Something went wrong converting scientific to ABC. Output invalid.');
+  }
+  return output;
+};
+
+},{"../../../regex/validation/abc_note_name":25,"../../../regex/validation/note_name":28,"../../accidental_to_alter":4}],9:[function(_dereq_,module,exports){
+var accidentals = {
+  "_": -1,
+  "=": 0,
+  "^": 1
+};
+
+// octave adjustments
+var adjustments = {
+  ",": -1,
+  "'": 1
+};
+
+module.exports = {
+  accidentals: accidentals,
+  adjustments: adjustments
+};
+
+},{}],10:[function(_dereq_,module,exports){
 var validate = _dereq_('../regex/validation/interval_name');
 
 // semitones from root of each note of the major scale
@@ -309,7 +424,7 @@ module.exports = function(interval_name) {
   return new Interval(interval_name);
 };
 
-},{"../regex/validation/interval_name":24}],8:[function(_dereq_,module,exports){
+},{"../regex/validation/interval_name":27}],11:[function(_dereq_,module,exports){
 var modulo = _dereq_('./modulo').modulo;
 
 var Circle = function(array) {
@@ -331,7 +446,7 @@ Circle.prototype.atIndex = function(index) {
 
 module.exports = Circle;
 
-},{"./modulo":9}],9:[function(_dereq_,module,exports){
+},{"./modulo":12}],12:[function(_dereq_,module,exports){
 function modulo(a, b) {
   if (a >= 0) {
     return a % b;
@@ -352,7 +467,7 @@ module.exports = {
   mod12: mod12
 };
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 // this will be the global object
 module.exports = {
   version: _dereq_('../package.json').version,
@@ -363,62 +478,21 @@ module.exports = {
   palette: _dereq_('./palette/palette')
 };
 
-},{"../package.json":1,"./chord/jazz":3,"./interval/interval":7,"./note/abc":11,"./note/note":12,"./palette/palette":14}],11:[function(_dereq_,module,exports){
-var validate        = _dereq_('../regex/validation/abc_note_name'),
-    alterToAccidental = _dereq_('../convert/alter_to_accidental'),
-    note              = _dereq_('./note');
-
-var accidentals = {
-  '_': -1,
-  '=': 0,
-  '^': 1
-};
-
-var adjustments = {
-  ',': -1,
-  '\'': 1
-};
+},{"../package.json":1,"./chord/jazz":3,"./interval/interval":10,"./note/abc":14,"./note/note":15,"./palette/palette":17}],14:[function(_dereq_,module,exports){
+var abcToScientific = _dereq_('../convert/notation/abc/abc_to_scientific'),
+    note            = _dereq_('./note');
 
 module.exports = function(abcInput) {
-  var parsed = validate(abcInput).parse();
-  if (!parsed) {
-    throw new Error('Invalid ABC note name.');
-  }
-
-  var step,
-      alter = 0,
-      accidental,
-      octave;
-
-  // if parsed step is a capital letter
-  if (/[A-G]/.test(parsed.step)) {
-    octave = 4;
-  } else { // parsed step is lowercase
-    octave = 5;
-  }
-
-  // get the total alter value of all accidentals present
-  for (var c = 0; c < parsed.accidental.length; c++) {
-    alter += accidentals[parsed.accidental[c]];
-  }
-
-  // for each comma or apostrophe adjustment, adjust the octave value
-  for (var d = 0; d < parsed.adjustments.length; d++) {
-    octave += adjustments[parsed.adjustments[d]];
-  }
-
-  step = parsed.step.toUpperCase();
-  accidental = alterToAccidental(alter);
-
-  return note(step + accidental + octave.toString(10));
+  return note(abcToScientific(abcInput));
 };
 
-},{"../convert/alter_to_accidental":5,"../regex/validation/abc_note_name":22,"./note":12}],12:[function(_dereq_,module,exports){
+},{"../convert/notation/abc/abc_to_scientific":7,"./note":15}],15:[function(_dereq_,module,exports){
 var validate        = _dereq_('../regex/validation/note_name'),
     pitch_names     = _dereq_('../primitives/pitch_names'),
     fifths          = _dereq_('../primitives/fifths'),
     intervals       = _dereq_('../primitives/intervals'),
     mtof            = _dereq_('../convert/mtof'),
+    scientificToAbc = _dereq_('../convert/notation/abc/scientific_to_abc'),
     transpose       = _dereq_('../utilities/transpose');
 
 function Note(noteInput) {
@@ -446,12 +520,7 @@ function Note(noteInput) {
   };
 
   if (parsed.octave !== null) {
-    this.name = parsed.step + parsed.accidental;
-    this.type = 'pitch';
-    this.octave = parsed.octave;
-    this.scientific = name;
-    this.midi = pitch_names.indexOf(this.scientific);
-    this.frequency = mtof(this.midi);
+    this.setOctave(parsed.octave);
   }
 
   return this;
@@ -465,7 +534,18 @@ var toNote = function(input) {
     return input;
   }
 };
-
+Note.prototype.setOctave = function(octave) {
+  if (typeof octave !== 'number') {
+    throw new TypeError('Octave must be a number.');
+  }
+  this.name = this.parts.step + this.parts.accidental;
+  this.type = 'pitch';
+  this.octave = octave;
+  this.scientific = this.name + octave.toString(10);
+  this.abc = scientificToAbc(this.scientific);
+  this.midi = pitch_names.indexOf(this.scientific);
+  this.frequency = mtof(this.midi);
+};
 Note.prototype.isEquivalent = function(other) {
   other = toNote(other);
   if (this.name !== other.name) {
@@ -485,16 +565,6 @@ Note.prototype.isEnharmonic = function(other) {
     return false;
   }
   return true;
-};
-Note.prototype.setOctave = function(octave) {
-  if (typeof octave !== 'number') {
-    throw new TypeError('Octave must be a number.');
-  }
-  this.octave = octave;
-  this.scientific = this.name + octave.toString(10);
-  this.midi = pitch_names.indexOf(this.scientific);
-  this.frequency = mtof(this.midi);
-  this.type = 'pitch';
 };
 Note.prototype.transpose = function(direction, interval) {
   return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
@@ -521,7 +591,7 @@ module.exports = function(noteInput) {
   return new Note(noteInput);
 };
 
-},{"../convert/mtof":6,"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/pitch_names":19,"../regex/validation/note_name":25,"../utilities/transpose":27}],13:[function(_dereq_,module,exports){
+},{"../convert/mtof":6,"../convert/notation/abc/scientific_to_abc":8,"../primitives/fifths":19,"../primitives/intervals":20,"../primitives/pitch_names":22,"../regex/validation/note_name":28,"../utilities/transpose":30}],16:[function(_dereq_,module,exports){
 var splitStringByPattern = _dereq_('../regex/split_string_by_pattern'),
     ParsedIntervalArray  = _dereq_('./parsed_interval_array');
 
@@ -634,7 +704,7 @@ module.exports = (function() {
   };
 })();
 
-},{"../regex/split_string_by_pattern":21,"./parsed_interval_array":15}],14:[function(_dereq_,module,exports){
+},{"../regex/split_string_by_pattern":24,"./parsed_interval_array":18}],17:[function(_dereq_,module,exports){
 function Palette(item) {
   this.notes = [];
   this.type = 'palette';
@@ -668,7 +738,7 @@ module.exports = function(item) {
   return new Palette(item);
 };
 
-},{}],15:[function(_dereq_,module,exports){
+},{}],18:[function(_dereq_,module,exports){
 var validate = _dereq_('../regex/validation/interval_name');
 
 function piaCompare(a,b) {
@@ -749,7 +819,7 @@ ParsedIntervalArray.prototype.unparse = function() {
 
 module.exports = ParsedIntervalArray;
 
-},{"../regex/validation/interval_name":24}],16:[function(_dereq_,module,exports){
+},{"../regex/validation/interval_name":27}],19:[function(_dereq_,module,exports){
 var Circle              = _dereq_('../math/circle'),
     modulo              = _dereq_('../math/modulo'),
     alterToAccidental   = _dereq_('../convert/alter_to_accidental'),
@@ -773,7 +843,7 @@ fifths.atIndex = function(index) {
 
 module.exports = fifths;
 
-},{"../convert/accidental_to_alter":4,"../convert/alter_to_accidental":5,"../math/circle":8,"../math/modulo":9}],17:[function(_dereq_,module,exports){
+},{"../convert/accidental_to_alter":4,"../convert/alter_to_accidental":5,"../math/circle":11,"../math/modulo":12}],20:[function(_dereq_,module,exports){
 var Circle   = _dereq_('../math/circle'),
     modulo   = _dereq_('../math/modulo'),
     validate = _dereq_('../regex/validation/interval_name');
@@ -865,14 +935,14 @@ intervals.atIndex = function(index) {
 
 module.exports = intervals;
 
-},{"../math/circle":8,"../math/modulo":9,"../regex/validation/interval_name":24}],18:[function(_dereq_,module,exports){
+},{"../math/circle":11,"../math/modulo":12,"../regex/validation/interval_name":27}],21:[function(_dereq_,module,exports){
 module.exports = {
   'b': -1,
   '#': 1,
   'x': 2
 };
 
-},{}],19:[function(_dereq_,module,exports){
+},{}],22:[function(_dereq_,module,exports){
 var Circle              = _dereq_('../math/circle'),
     modulo              = _dereq_('../math/modulo'),
     accidentalToAlter   = _dereq_('../convert/accidental_to_alter'),
@@ -902,9 +972,9 @@ pitch_names.atIndex = function(index) {
 
 module.exports = pitch_names;
 
-},{"../convert/accidental_to_alter":4,"../math/circle":8,"../math/modulo":9,"../regex/validation/note_name":25}],20:[function(_dereq_,module,exports){
+},{"../convert/accidental_to_alter":4,"../math/circle":11,"../math/modulo":12,"../regex/validation/note_name":28}],23:[function(_dereq_,module,exports){
 module.exports = ['C','D','E','F','G','A','B'];
-},{}],21:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 module.exports = function(str, pattern) {
   var output = [];
   while(pattern.test(str)) {
@@ -915,7 +985,7 @@ module.exports = function(str, pattern) {
   return output;
 };
 
-},{}],22:[function(_dereq_,module,exports){
+},{}],25:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
@@ -934,7 +1004,7 @@ module.exports = function(abc_note_name) {
   return validation(abc_note_name);
 };
 
-},{"./validation_factory":26}],23:[function(_dereq_,module,exports){
+},{"./validation_factory":29}],26:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
@@ -974,7 +1044,7 @@ module.exports = function(chord_name) {
   return validation(chord_name);
 };
 
-},{"./validation_factory":26}],24:[function(_dereq_,module,exports){
+},{"./validation_factory":29}],27:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
@@ -993,7 +1063,7 @@ module.exports = function(interval_name) {
   return validation(interval_name);
 };
 
-},{"./validation_factory":26}],25:[function(_dereq_,module,exports){
+},{"./validation_factory":29}],28:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function(){
@@ -1013,7 +1083,7 @@ module.exports = function(note_name) {
   return validation(note_name);
 };
 
-},{"./validation_factory":26}],26:[function(_dereq_,module,exports){
+},{"./validation_factory":29}],29:[function(_dereq_,module,exports){
 // this makes a validation function for a string type defined by 'name'
 module.exports = function(name, regex, parsing_function) {
   return function(input) {
@@ -1036,7 +1106,7 @@ module.exports = function(name, regex, parsing_function) {
   };
 };
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],30:[function(_dereq_,module,exports){
 var intervals    = _dereq_('../primitives/intervals'),
     fifths       = _dereq_('../primitives/fifths'),
     steps        = _dereq_('../primitives/steps'),
@@ -1079,6 +1149,6 @@ function transpose(note_name, direction, interval) {
 
 module.exports = transpose;
 
-},{"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/steps":20,"../regex/validation/interval_name":24,"../regex/validation/note_name":25}]},{},[10])
-(10)
+},{"../primitives/fifths":19,"../primitives/intervals":20,"../primitives/steps":23,"../regex/validation/interval_name":27,"../regex/validation/note_name":28}]},{},[13])
+(13)
 });
