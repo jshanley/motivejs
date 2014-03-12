@@ -138,9 +138,16 @@ var validate                = _dereq_('../regex/validation/chord_name'),
     note                    = _dereq_('../note/note'),
     transpose               = _dereq_('../utilities/transpose'),
     getSpeciesIntervals     = _dereq_('./get_species_intervals'),
-    applyAlterations        = _dereq_('../palette/apply_alterations'),
-    getNotesFromIntervals   = _dereq_('../palette/get_notes_from_interval_array');
+    applyAlterations        = _dereq_('../palette/apply_alterations');
 
+function getNotes(intervals, root) {
+  var output = [];
+  output.push(root);
+  for (var i = 1; i < intervals.length; i++) {
+    output.push(root.up(intervals[i]));
+  }
+  return output;
+}
 
 function JazzChord(chord_name) {
   var parsed = validate(chord_name).parse();
@@ -158,7 +165,7 @@ function JazzChord(chord_name) {
   this.isSlash = parsed.slash === '/' ? true : false;
   this.bass = this.isSlash ? note(parsed.bass) : this.root;
   this.intervals = memberIntervals;
-  this.notes = getNotesFromIntervals(this.intervals, this.root);
+  this.notes = getNotes(this.intervals, this.root);
 }
 
 JazzChord.prototype.transpose = function(direction, interval) {
@@ -169,7 +176,7 @@ module.exports = function(chord_name) {
   return new JazzChord(chord_name);
 };
 
-},{"../note/note":11,"../palette/apply_alterations":12,"../palette/get_notes_from_interval_array":13,"../regex/validation/chord_name":22,"../utilities/transpose":26,"./get_species_intervals":2}],4:[function(_dereq_,module,exports){
+},{"../note/note":12,"../palette/apply_alterations":13,"../regex/validation/chord_name":23,"../utilities/transpose":27,"./get_species_intervals":2}],4:[function(_dereq_,module,exports){
 var operators = _dereq_('../primitives/operators');
 
 function accidentalToAlter(accidental) {
@@ -302,7 +309,7 @@ module.exports = function(interval_name) {
   return new Interval(interval_name);
 };
 
-},{"../regex/validation/interval_name":23}],8:[function(_dereq_,module,exports){
+},{"../regex/validation/interval_name":24}],8:[function(_dereq_,module,exports){
 var modulo = _dereq_('./modulo').modulo;
 
 var Circle = function(array) {
@@ -349,13 +356,64 @@ module.exports = {
 // this will be the global object
 module.exports = {
   version: _dereq_('../package.json').version,
+  abc: _dereq_('./note/abc'),
   note: _dereq_('./note/note'),
   chord: _dereq_('./chord/jazz'),
   interval: _dereq_('./interval/interval'),
   palette: _dereq_('./palette/palette')
 };
 
-},{"../package.json":1,"./chord/jazz":3,"./interval/interval":7,"./note/note":11,"./palette/palette":14}],11:[function(_dereq_,module,exports){
+},{"../package.json":1,"./chord/jazz":3,"./interval/interval":7,"./note/abc":11,"./note/note":12,"./palette/palette":14}],11:[function(_dereq_,module,exports){
+var validate        = _dereq_('../regex/validation/abc_note_name'),
+    alterToAccidental = _dereq_('../convert/alter_to_accidental'),
+    note              = _dereq_('./note');
+
+var accidentals = {
+  '_': -1,
+  '=': 0,
+  '^': 1
+};
+
+var adjustments = {
+  ',': -1,
+  '\'': 1
+};
+
+module.exports = function(abcInput) {
+  var parsed = validate(abcInput).parse();
+  if (!parsed) {
+    throw new Error('Invalid ABC note name.');
+  }
+
+  var step,
+      alter = 0,
+      accidental,
+      octave;
+
+  // if parsed step is a capital letter
+  if (/[A-G]/.test(parsed.step)) {
+    octave = 4;
+  } else { // parsed step is lowercase
+    octave = 5;
+  }
+
+  // get the total alter value of all accidentals present
+  for (var c = 0; c < parsed.accidental.length; c++) {
+    alter += accidentals[parsed.accidental[c]];
+  }
+
+  // for each comma or apostrophe adjustment, adjust the octave value
+  for (var d = 0; d < parsed.adjustments.length; d++) {
+    octave += adjustments[parsed.adjustments[d]];
+  }
+
+  step = parsed.step.toUpperCase();
+  accidental = alterToAccidental(alter);
+
+  return note(step + accidental + octave.toString(10));
+};
+
+},{"../convert/alter_to_accidental":5,"../regex/validation/abc_note_name":22,"./note":12}],12:[function(_dereq_,module,exports){
 var validate        = _dereq_('../regex/validation/note_name'),
     pitch_names     = _dereq_('../primitives/pitch_names'),
     fifths          = _dereq_('../primitives/fifths'),
@@ -463,7 +521,7 @@ module.exports = function(noteInput) {
   return new Note(noteInput);
 };
 
-},{"../convert/mtof":6,"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/pitch_names":19,"../regex/validation/note_name":24,"../utilities/transpose":26}],12:[function(_dereq_,module,exports){
+},{"../convert/mtof":6,"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/pitch_names":19,"../regex/validation/note_name":25,"../utilities/transpose":27}],13:[function(_dereq_,module,exports){
 var splitStringByPattern = _dereq_('../regex/split_string_by_pattern'),
     ParsedIntervalArray  = _dereq_('./parsed_interval_array');
 
@@ -576,22 +634,7 @@ module.exports = (function() {
   };
 })();
 
-},{"../regex/split_string_by_pattern":21,"./parsed_interval_array":15}],13:[function(_dereq_,module,exports){
-module.exports = (function() {
-  return function(interval_array, root) {
-    var output = [];
-    for (var i = 0; i < interval_array.length; i++) {
-      if (interval_array[i] === 'R') {
-        output.push(root);
-      } else {
-        output.push(root.transpose('up', interval_array[i]));
-      }
-    }
-    return output;
-  };
-})();
-
-},{}],14:[function(_dereq_,module,exports){
+},{"../regex/split_string_by_pattern":21,"./parsed_interval_array":15}],14:[function(_dereq_,module,exports){
 function Palette(item) {
   this.notes = [];
   this.type = 'palette';
@@ -706,7 +749,7 @@ ParsedIntervalArray.prototype.unparse = function() {
 
 module.exports = ParsedIntervalArray;
 
-},{"../regex/validation/interval_name":23}],16:[function(_dereq_,module,exports){
+},{"../regex/validation/interval_name":24}],16:[function(_dereq_,module,exports){
 var Circle              = _dereq_('../math/circle'),
     modulo              = _dereq_('../math/modulo'),
     alterToAccidental   = _dereq_('../convert/alter_to_accidental'),
@@ -822,7 +865,7 @@ intervals.atIndex = function(index) {
 
 module.exports = intervals;
 
-},{"../math/circle":8,"../math/modulo":9,"../regex/validation/interval_name":23}],18:[function(_dereq_,module,exports){
+},{"../math/circle":8,"../math/modulo":9,"../regex/validation/interval_name":24}],18:[function(_dereq_,module,exports){
 module.exports = {
   'b': -1,
   '#': 1,
@@ -859,7 +902,7 @@ pitch_names.atIndex = function(index) {
 
 module.exports = pitch_names;
 
-},{"../convert/accidental_to_alter":4,"../math/circle":8,"../math/modulo":9,"../regex/validation/note_name":24}],20:[function(_dereq_,module,exports){
+},{"../convert/accidental_to_alter":4,"../math/circle":8,"../math/modulo":9,"../regex/validation/note_name":25}],20:[function(_dereq_,module,exports){
 module.exports = ['C','D','E','F','G','A','B'];
 },{}],21:[function(_dereq_,module,exports){
 module.exports = function(str, pattern) {
@@ -873,6 +916,25 @@ module.exports = function(str, pattern) {
 };
 
 },{}],22:[function(_dereq_,module,exports){
+var makeValidation = _dereq_('./validation_factory');
+
+var validation = (function() {
+  var abc_regex = /((?:\_|\=|\^)*)([a-g]|[A-G])((?:\,|\')*)/;
+
+  return makeValidation('abc-note', abc_regex, function(captures) {
+    return {
+      accidental: captures[1] ? captures[1] : '',
+      step: captures[2],
+      adjustments: captures[3] ? captures[3] : ''
+    };
+  });
+})();
+
+module.exports = function(abc_note_name) {
+  return validation(abc_note_name);
+};
+
+},{"./validation_factory":26}],23:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
@@ -912,7 +974,7 @@ module.exports = function(chord_name) {
   return validation(chord_name);
 };
 
-},{"./validation_factory":25}],23:[function(_dereq_,module,exports){
+},{"./validation_factory":26}],24:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function() {
@@ -931,7 +993,7 @@ module.exports = function(interval_name) {
   return validation(interval_name);
 };
 
-},{"./validation_factory":25}],24:[function(_dereq_,module,exports){
+},{"./validation_factory":26}],25:[function(_dereq_,module,exports){
 var makeValidation = _dereq_('./validation_factory');
 
 var validation = (function(){
@@ -951,7 +1013,7 @@ module.exports = function(note_name) {
   return validation(note_name);
 };
 
-},{"./validation_factory":25}],25:[function(_dereq_,module,exports){
+},{"./validation_factory":26}],26:[function(_dereq_,module,exports){
 // this makes a validation function for a string type defined by 'name'
 module.exports = function(name, regex, parsing_function) {
   return function(input) {
@@ -974,7 +1036,7 @@ module.exports = function(name, regex, parsing_function) {
   };
 };
 
-},{}],26:[function(_dereq_,module,exports){
+},{}],27:[function(_dereq_,module,exports){
 var intervals    = _dereq_('../primitives/intervals'),
     fifths       = _dereq_('../primitives/fifths'),
     steps        = _dereq_('../primitives/steps'),
@@ -1017,6 +1079,6 @@ function transpose(note_name, direction, interval) {
 
 module.exports = transpose;
 
-},{"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/steps":20,"../regex/validation/interval_name":23,"../regex/validation/note_name":24}]},{},[10])
+},{"../primitives/fifths":16,"../primitives/intervals":17,"../primitives/steps":20,"../regex/validation/interval_name":24,"../regex/validation/note_name":25}]},{},[10])
 (10)
 });
