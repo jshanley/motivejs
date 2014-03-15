@@ -35,6 +35,9 @@ function JazzChord(chord_name) {
 JazzChord.prototype.transpose = function(direction, interval) {
   return new JazzChord(transpose(this.root, direction, interval).name + this.formula);
 };
+JazzChord.prototype.toString = function() {
+  return '[chord ' + this.name + ']';
+};
 
 module.exports = function(chord_name) {
   return new JazzChord(chord_name);

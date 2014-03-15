@@ -171,6 +171,9 @@ function JazzChord(chord_name) {
 JazzChord.prototype.transpose = function(direction, interval) {
   return new JazzChord(transpose(this.root, direction, interval).name + this.formula);
 };
+JazzChord.prototype.toString = function() {
+  return '[chord ' + this.name + ']';
+};
 
 module.exports = function(chord_name) {
   return new JazzChord(chord_name);
@@ -584,7 +587,13 @@ Note.prototype.down = function(interval) {
   return this.transpose('down', interval);
 };
 Note.prototype.toString = function() {
-  return this.name;
+  var name;
+  if (this.type === 'note') {
+    name = this.name;
+  } else if (this.type === 'pitch'){
+    name = this.scientific;
+  }
+  return '[note ' + name + ']';
 };
 
 module.exports = function(noteInput) {
