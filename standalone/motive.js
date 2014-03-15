@@ -2,7 +2,7 @@
 module.exports={
   "name": "motive",
   "description": "JavaScript music theory library",
-  "version": "0.1.4",
+  "version": "0.1.4-1",
   "homepage": "http://jshanley.github.io/motivejs/",
   "author": {
     "name": "John Shanley",
