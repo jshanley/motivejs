@@ -1,5 +1,6 @@
 (function() {
   var motive = {};
+
   var math = {};
 
   math.modulo = function(a, b) {
@@ -930,6 +931,18 @@
   };
   motive.Chord.prototype.toString = function() {
     return '[chord ' + this.name + ']';
+  };
+
+  motive.note = function(noteInput) {
+    return new motive.Note(noteInput);
+  };
+
+  motive.chord = function(chordInput) {
+    return new motive.Chord(chordInput);
+  };
+
+  motive.interval = function(intervalInput) {
+    return new motive.Interval(intervalInput);
   };
 
   if (typeof define === 'function' && define.amd) {

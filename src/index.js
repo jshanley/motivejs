@@ -1,4 +1,5 @@
 import "intro";
+
 import "math/";
 import "primitives/";
 import "convert/";
@@ -11,5 +12,7 @@ import "note/";
 import "interval/";
 import "palette/";
 import "chord/";
+
+import "shortcuts";
 
 import "outro";

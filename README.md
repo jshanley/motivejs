@@ -11,22 +11,22 @@ npm install motive
 var motive = require('motive');
 ```
 ### browser:
-
-Browser builds can be found in the 'standalone' directory of this repo.
 ```html
 <script src="path/to/motive.min.js"></script>
 ```
 
 This will create a global variable `motive`.
 
-_TODO: make an AMD build for use with RequireJS_
+alternatively, you can require `motive.js` or `motive.min.js` as an AMD module.
 
 ## Examples
 
-_create a note:_
+_**update 0.2.0** you now have direct access to the `motive.Note`, `motive.Interval` and `motive.Chord` classes so they can be extended. The lowercase methods are simply shortcuts which create the new object for you. For instance, `motive.note('C')` is equivalent to `new motive.Note('C')`._
+
+create a note:
 ```javascript
 var myNote = motive.note('Bb');
-
+// you now have some info about your note
 myNote.type;               // 'note'
 myNote.pitchClass;         // 10
 myNote.isEnharmonic('A#'); // true
@@ -34,37 +34,35 @@ myNote.intervalFrom('Eb'); // 'P5'
 myNote.intervalTo('C');    // 'M2'
 ```
 
-_set the note's octave to make it a pitch:_
+set the note's octave to make it an exact pitch:
 ```javascript
 myNote.setOctave(3);
-
+// now that it's a pitch you have some additional info
 myNote.type;           // 'pitch'
 myNote.midi;           // 58
 myNote.frequency;      // 233.0818....
 ```
 
-_make a new note by transposing:_
+make a new note by transposing:
 ```javascript
 var otherNote = myNote.up('P5');
-
+// this creates a new note up a perfect fifth from your first note
 otherNote.name;        // 'F'
 otherNote.octave;      // 4
 ```
 
-_create a chord:_
+create a chord:
 ```javascript
 var myChord = motive.chord('Dm7');
-
-myChord.root.name;     // 'D'
+// the root is a motive.Note object
+myChord.root;     // '[note D]'
 myChord.intervals;     // [ 'R', 'm3', 'P5', 'm7' ]
-myChord.notes;         // [ 'D', 'F', 'A', 'C' ]
+// this is an array of motive.Note objects representing the members
+myChord.notes;   // [ '[note D]', '[note F]', '[note A]', '[note C]' ]
 ```
 ## License
 Copyright (c) 2014 John Shanley.
 
 Licensed under the [MIT license](LICENSE-MIT).
-
-
-***
 
 Project created by [John Shanley](https://github.com/jshanley).
