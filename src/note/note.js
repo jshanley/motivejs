@@ -1,29 +1,21 @@
-var validate        = require('../regex/validation/note_name'),
-    pitch_names     = require('../primitives/pitch_names'),
-    fifths          = require('../primitives/fifths'),
-    intervals       = require('../primitives/intervals'),
-    mtof            = require('../convert/mtof'),
-    scientificToAbc = require('../convert/notation/abc/scientific_to_abc'),
-    transpose       = require('../utilities/transpose');
-
-function Note(noteInput) {
+motive.Note = function(noteInput) {
   var name;
   if (typeof noteInput === 'string') {
     name = noteInput;
   } else if (typeof noteInput === 'number') {
-    name = pitch_names.atIndex(noteInput);
+    name = circles.pitchNames.atIndex(noteInput);
   } else {
     throw new TypeError('Note name must be a string or number.');
   }
 
-  var parsed = validate(name).parse();
+  var parsed = regex.validate.noteName(name).parse();
   if (!parsed) {
     throw new Error('Invalid note name.');
   }
 
   this.name = name;
   this.type = 'note';
-  this.pitchClass = pitch_names.indexOf(parsed.step + parsed.accidental);
+  this.pitchClass = circles.pitchNames.indexOf(parsed.step + parsed.accidental);
 
   this.parts = {
     step: parsed.step,
@@ -40,12 +32,12 @@ function Note(noteInput) {
 // converts an input to note object if a string is given instead
 var toNote = function(input) {
   if (typeof input === 'string') {
-    return new Note(input);
+    return new motive.Note(input);
   } else {
     return input;
   }
 };
-Note.prototype.setOctave = function(octave) {
+motive.Note.prototype.setOctave = function(octave) {
   if (typeof octave !== 'number') {
     throw new TypeError('Octave must be a number.');
   }
@@ -53,11 +45,11 @@ Note.prototype.setOctave = function(octave) {
   this.type = 'pitch';
   this.octave = octave;
   this.scientific = this.name + octave.toString(10);
-  this.abc = scientificToAbc(this.scientific);
-  this.midi = pitch_names.indexOf(this.scientific);
-  this.frequency = mtof(this.midi);
+  this.abc = notations.abc.scientificToAbc(this.scientific);
+  this.midi = circles.pitchNames.indexOf(this.scientific);
+  this.frequency = convert.mtof(this.midi);
 };
-Note.prototype.isEquivalent = function(other) {
+motive.Note.prototype.isEquivalent = function(other) {
   other = toNote(other);
   if (this.name !== other.name) {
     return false;
@@ -67,7 +59,7 @@ Note.prototype.isEquivalent = function(other) {
   }
   return true;
 };
-Note.prototype.isEnharmonic = function(other) {
+motive.Note.prototype.isEnharmonic = function(other) {
   other = toNote(other);
   if (this.pitchClass !== other.pitchClass) {
     return false;
@@ -77,24 +69,24 @@ Note.prototype.isEnharmonic = function(other) {
   }
   return true;
 };
-Note.prototype.transpose = function(direction, interval) {
-  return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
+motive.Note.prototype.transpose = function(direction, interval) {
+  return new motive.Note(utilities.transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
 };
-Note.prototype.intervalTo = function(note) {
+motive.Note.prototype.intervalTo = function(note) {
   note = toNote(note);
-  return intervals.atIndex(fifths.indexOf(note.name) - fifths.indexOf(this.name));
+  return circles.intervals.atIndex(circles.fifths.indexOf(note.name) - circles.fifths.indexOf(this.name));
 };
-Note.prototype.intervalFrom = function(note) {
+motive.Note.prototype.intervalFrom = function(note) {
   note = toNote(note);
-  return intervals.atIndex(fifths.indexOf(this.name) - fifths.indexOf(note.name));
+  return circles.intervals.atIndex(circles.fifths.indexOf(this.name) - circles.fifths.indexOf(note.name));
 };
-Note.prototype.up = function(interval) {
+motive.Note.prototype.up = function(interval) {
   return this.transpose('up', interval);
 };
-Note.prototype.down = function(interval) {
+motive.Note.prototype.down = function(interval) {
   return this.transpose('down', interval);
 };
-Note.prototype.toString = function() {
+motive.Note.prototype.toString = function() {
   var name;
   if (this.type === 'note') {
     name = this.name;
@@ -102,8 +94,4 @@ Note.prototype.toString = function() {
     name = this.scientific;
   }
   return '[note ' + name + ']';
-};
-
-module.exports = function(noteInput) {
-  return new Note(noteInput);
 };

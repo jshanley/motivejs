@@ -2,24 +2,23 @@
 
 module.exports = function(grunt) {
 
-  // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    jshint: {
-      options: {
-        jshintrc: '.jshintrc'
-      },
-      all: ['Gruntfile.js', 'src/**/*.js', 'test/*.js']
+    smash: {
+      dist: {
+        src: 'src/index.js',
+        dest: 'motive.js'
+      }
     },
 
-    browserify: {
-      dist: {
-        files: {
-          'standalone/motive.js': ['src/motive.js']
-        },
-        options: {
-          standalone: 'motive'
+    jsbeautifier: {
+      files: ['motive.js'],
+      options: {
+        js: {
+          indentChar: ' ',
+          indentSize: 2,
+          indentWithTabs: false
         }
       }
     },
@@ -27,7 +26,7 @@ module.exports = function(grunt) {
     uglify: {
       standalone: {
         files: {
-          'standalone/motive.min.js': ['standalone/motive.js']
+          'motive.min.js': ['motive.js']
         }
       }
     },
@@ -38,13 +37,12 @@ module.exports = function(grunt) {
 
   });
 
-  // Load npm plugins to provide necessary tasks.
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-nodeunit');
-  grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-smash');
+  grunt.loadNpmTasks('grunt-jsbeautifier');
 
-  // Default to tasks to run with the "grunt" command.
-  grunt.registerTask('default', ['jshint', 'browserify', 'uglify', 'nodeunit']);
+  grunt.registerTask('default', ['build', 'test']);
+  grunt.registerTask('build', ['smash', 'jsbeautifier', 'uglify']);
   grunt.registerTask('test', ['nodeunit']);
 };

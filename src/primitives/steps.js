@@ -1,1 +1,1 @@
-module.exports = ['C','D','E','F','G','A','B'];
+primitives.steps = ['C','D','E','F','G','A','B'];

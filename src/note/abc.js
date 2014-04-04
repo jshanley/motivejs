@@ -1,6 +1,4 @@
-var abcToScientific = require('../convert/notation/abc/abc_to_scientific'),
-    note            = require('./note');
-
-module.exports = function(abcInput) {
-  return note(abcToScientific(abcInput));
-};
+motive.abc = function(abcInput) {
+  var sci = notations.abc.abcToScientific(abcInput);
+  return new motive.Note(sci);
+}
