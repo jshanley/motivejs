@@ -1,4 +1,4 @@
-motive.Chord = function(chord_name) {
+var Chord = function(chord_name) {
   var parsed = regex.validate.chordName(chord_name).parse();
   if (!parsed) {
     throw new Error('Invalid chord name.');
@@ -9,17 +9,17 @@ motive.Chord = function(chord_name) {
 
   this.name = chord_name;
   this.type = 'chord';
-  this.root = new motive.Note(parsed.root);
+  this.root = new Note(parsed.root);
   this.formula = parsed.species + parsed.alterations;
   this.isSlash = parsed.slash === '/' ? true : false;
-  this.bass = this.isSlash ? new motive.Note(parsed.bass) : this.root;
+  this.bass = this.isSlash ? new Note(parsed.bass) : this.root;
   this.intervals = memberIntervals;
   this.notes = getChordNotes(this.intervals, this.root);
 }
 
-motive.Chord.prototype.transpose = function(direction, interval) {
-  return new motive.Chord(utilities.transpose(this.root, direction, interval).name + this.formula);
+Chord.prototype.transpose = function(direction, interval) {
+  return new Chord(utilities.transpose(this.root, direction, interval).name + this.formula);
 };
-motive.Chord.prototype.toString = function() {
+Chord.prototype.toString = function() {
   return '[chord ' + this.name + ']';
 };

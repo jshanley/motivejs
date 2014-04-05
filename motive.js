@@ -441,7 +441,7 @@
     return output;
   };
 
-  motive.Note = function(noteInput) {
+  var Note = function(noteInput) {
     var name;
     if (typeof noteInput === 'string') {
       name = noteInput;
@@ -475,12 +475,12 @@
   // converts an input to note object if a string is given instead
   var toNote = function(input) {
     if (typeof input === 'string') {
-      return new motive.Note(input);
+      return new Note(input);
     } else {
       return input;
     }
   };
-  motive.Note.prototype.setOctave = function(octave) {
+  Note.prototype.setOctave = function(octave) {
     if (typeof octave !== 'number') {
       throw new TypeError('Octave must be a number.');
     }
@@ -492,7 +492,7 @@
     this.midi = circles.pitchNames.indexOf(this.scientific);
     this.frequency = convert.mtof(this.midi);
   };
-  motive.Note.prototype.isEquivalent = function(other) {
+  Note.prototype.isEquivalent = function(other) {
     other = toNote(other);
     if (this.name !== other.name) {
       return false;
@@ -502,7 +502,7 @@
     }
     return true;
   };
-  motive.Note.prototype.isEnharmonic = function(other) {
+  Note.prototype.isEnharmonic = function(other) {
     other = toNote(other);
     if (this.pitchClass !== other.pitchClass) {
       return false;
@@ -512,24 +512,24 @@
     }
     return true;
   };
-  motive.Note.prototype.transpose = function(direction, interval) {
-    return new motive.Note(utilities.transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
+  Note.prototype.transpose = function(direction, interval) {
+    return new Note(utilities.transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
   };
-  motive.Note.prototype.intervalTo = function(note) {
+  Note.prototype.intervalTo = function(note) {
     note = toNote(note);
     return circles.intervals.atIndex(circles.fifths.indexOf(note.name) - circles.fifths.indexOf(this.name));
   };
-  motive.Note.prototype.intervalFrom = function(note) {
+  Note.prototype.intervalFrom = function(note) {
     note = toNote(note);
     return circles.intervals.atIndex(circles.fifths.indexOf(this.name) - circles.fifths.indexOf(note.name));
   };
-  motive.Note.prototype.up = function(interval) {
+  Note.prototype.up = function(interval) {
     return this.transpose('up', interval);
   };
-  motive.Note.prototype.down = function(interval) {
+  Note.prototype.down = function(interval) {
     return this.transpose('down', interval);
   };
-  motive.Note.prototype.toString = function() {
+  Note.prototype.toString = function() {
     var name;
     if (this.type === 'note') {
       name = this.name;
@@ -538,58 +538,58 @@
     }
     return '[note ' + name + ']';
   };
-  motive.abc = function(abcInput) {
+  var abc = function(abcInput) {
     var sci = notations.abc.abcToScientific(abcInput);
-    return new motive.Note(sci);
+    return new Note(sci);
   }
   // 1,4,5 are treated differently than other interval sizes,
   //   this helps to identify them immediately
-  function getIntervalSpecies(size) {
-    if (size === 1 || size === 4 || size === 5) {
-      return 'P';
-    } else {
-      return 'M';
-    }
-  }
-
-  function getIntervalSemitones(quality, normalizedSize, octaves, species) {
-    // semitones from root of each note of the major scale
-    var major = [0, 2, 4, 5, 7, 9, 11];
-
-    // qualityInt represents the integer difference from a major or perfect quality interval
-    //   for example, m3 will yield -1 since a minor 3rd is one semitone less than a major 3rd
-    var qualityInt = 0;
-    var q1 = quality.slice(0, 1);
-    switch (q1) {
-      case 'P':
-      case 'M':
-        break;
-      case 'm':
-        qualityInt -= 1;
-        break;
-      case 'A':
-        qualityInt += 1;
-        break;
-      case 'd':
-        if (species === 'M') {
-          qualityInt -= 2;
-        } else {
-          qualityInt -= 1;
-        }
-        break;
-    }
-    // handle additional augmentations or diminutions
-    for (var q = 0; q < quality.slice(1).length; q++) {
-      if (quality.slice(1)[q] === 'd') {
-        qualityInt -= 1;
-      } else if (quality.slice(1)[q] === 'A') {
-        qualityInt += 1;
+    function getIntervalSpecies(size) {
+      if (size === 1 || size === 4 || size === 5) {
+        return 'P';
+      } else {
+        return 'M';
       }
     }
 
-    return major[normalizedSize - 1] + qualityInt + (octaves * 12);
-  }
-  motive.Interval = function(interval_name) {
+    function getIntervalSemitones(quality, normalizedSize, octaves, species) {
+      // semitones from root of each note of the major scale
+      var major = [0, 2, 4, 5, 7, 9, 11];
+
+      // qualityInt represents the integer difference from a major or perfect quality interval
+      //   for example, m3 will yield -1 since a minor 3rd is one semitone less than a major 3rd
+      var qualityInt = 0;
+      var q1 = quality.slice(0, 1);
+      switch (q1) {
+        case 'P':
+        case 'M':
+          break;
+        case 'm':
+          qualityInt -= 1;
+          break;
+        case 'A':
+          qualityInt += 1;
+          break;
+        case 'd':
+          if (species === 'M') {
+            qualityInt -= 2;
+          } else {
+            qualityInt -= 1;
+          }
+          break;
+      }
+      // handle additional augmentations or diminutions
+      for (var q = 0; q < quality.slice(1).length; q++) {
+        if (quality.slice(1)[q] === 'd') {
+          qualityInt -= 1;
+        } else if (quality.slice(1)[q] === 'A') {
+          qualityInt += 1;
+        }
+      }
+
+      return major[normalizedSize - 1] + qualityInt + (octaves * 12);
+    }
+  var Interval = function(interval_name) {
     var parsed = regex.validate.intervalName(interval_name).parse();
     if (!parsed) {
       throw new Error('Invalid interval name.');
@@ -907,7 +907,7 @@
     }
     return output;
   }
-  motive.Chord = function(chord_name) {
+  var Chord = function(chord_name) {
     var parsed = regex.validate.chordName(chord_name).parse();
     if (!parsed) {
       throw new Error('Invalid chord name.');
@@ -918,31 +918,39 @@
 
     this.name = chord_name;
     this.type = 'chord';
-    this.root = new motive.Note(parsed.root);
+    this.root = new Note(parsed.root);
     this.formula = parsed.species + parsed.alterations;
     this.isSlash = parsed.slash === '/' ? true : false;
-    this.bass = this.isSlash ? new motive.Note(parsed.bass) : this.root;
+    this.bass = this.isSlash ? new Note(parsed.bass) : this.root;
     this.intervals = memberIntervals;
     this.notes = getChordNotes(this.intervals, this.root);
   }
 
-  motive.Chord.prototype.transpose = function(direction, interval) {
-    return new motive.Chord(utilities.transpose(this.root, direction, interval).name + this.formula);
+  Chord.prototype.transpose = function(direction, interval) {
+    return new Chord(utilities.transpose(this.root, direction, interval).name + this.formula);
   };
-  motive.Chord.prototype.toString = function() {
+  Chord.prototype.toString = function() {
     return '[chord ' + this.name + ']';
   };
 
+  motive.abc = abc;
+
   motive.note = function(noteInput) {
-    return new motive.Note(noteInput);
+    return new Note(noteInput);
   };
 
   motive.chord = function(chordInput) {
-    return new motive.Chord(chordInput);
+    return new Chord(chordInput);
   };
 
   motive.interval = function(intervalInput) {
-    return new motive.Interval(intervalInput);
+    return new Interval(intervalInput);
+  };
+
+  motive.constructors = {
+    Note: Note,
+    Interval: Interval,
+    Chord: Chord
   };
 
   if (typeof define === 'function' && define.amd) {

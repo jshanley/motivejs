@@ -1,4 +1,4 @@
-motive.Interval = function(interval_name) {
+var Interval = function(interval_name) {
   var parsed = regex.validate.intervalName(interval_name).parse();
   if (!parsed) {
     throw new Error('Invalid interval name.');

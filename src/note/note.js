@@ -1,4 +1,4 @@
-motive.Note = function(noteInput) {
+var Note = function(noteInput) {
   var name;
   if (typeof noteInput === 'string') {
     name = noteInput;
@@ -32,12 +32,12 @@ motive.Note = function(noteInput) {
 // converts an input to note object if a string is given instead
 var toNote = function(input) {
   if (typeof input === 'string') {
-    return new motive.Note(input);
+    return new Note(input);
   } else {
     return input;
   }
 };
-motive.Note.prototype.setOctave = function(octave) {
+Note.prototype.setOctave = function(octave) {
   if (typeof octave !== 'number') {
     throw new TypeError('Octave must be a number.');
   }
@@ -49,7 +49,7 @@ motive.Note.prototype.setOctave = function(octave) {
   this.midi = circles.pitchNames.indexOf(this.scientific);
   this.frequency = convert.mtof(this.midi);
 };
-motive.Note.prototype.isEquivalent = function(other) {
+Note.prototype.isEquivalent = function(other) {
   other = toNote(other);
   if (this.name !== other.name) {
     return false;
@@ -59,7 +59,7 @@ motive.Note.prototype.isEquivalent = function(other) {
   }
   return true;
 };
-motive.Note.prototype.isEnharmonic = function(other) {
+Note.prototype.isEnharmonic = function(other) {
   other = toNote(other);
   if (this.pitchClass !== other.pitchClass) {
     return false;
@@ -69,24 +69,24 @@ motive.Note.prototype.isEnharmonic = function(other) {
   }
   return true;
 };
-motive.Note.prototype.transpose = function(direction, interval) {
-  return new motive.Note(utilities.transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
+Note.prototype.transpose = function(direction, interval) {
+  return new Note(utilities.transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
 };
-motive.Note.prototype.intervalTo = function(note) {
+Note.prototype.intervalTo = function(note) {
   note = toNote(note);
   return circles.intervals.atIndex(circles.fifths.indexOf(note.name) - circles.fifths.indexOf(this.name));
 };
-motive.Note.prototype.intervalFrom = function(note) {
+Note.prototype.intervalFrom = function(note) {
   note = toNote(note);
   return circles.intervals.atIndex(circles.fifths.indexOf(this.name) - circles.fifths.indexOf(note.name));
 };
-motive.Note.prototype.up = function(interval) {
+Note.prototype.up = function(interval) {
   return this.transpose('up', interval);
 };
-motive.Note.prototype.down = function(interval) {
+Note.prototype.down = function(interval) {
   return this.transpose('down', interval);
 };
-motive.Note.prototype.toString = function() {
+Note.prototype.toString = function() {
   var name;
   if (this.type === 'note') {
     name = this.name;

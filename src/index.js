@@ -13,6 +13,6 @@ import "interval/";
 import "palette/";
 import "chord/";
 
-import "shortcuts";
+import "api";
 
 import "outro";
