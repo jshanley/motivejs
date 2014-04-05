@@ -12,6 +12,8 @@ motive.interval = function(intervalInput) {
   return new Interval(intervalInput);
 };
 
+motive.circles = circles;
+
 motive.constructors = {
 	Note: Note,
 	Interval: Interval,
