@@ -21,7 +21,7 @@ alternatively, you can require `motive.js` or `motive.min.js` as an AMD module.
 
 ## Examples
 
-_**update 0.2.0** you now have direct access to the `motive.Note`, `motive.Interval` and `motive.Chord` classes so they can be extended. The lowercase methods are simply shortcuts which create the new object for you. For instance, `motive.note('C')` is equivalent to `new motive.Note('C')`._
+_**update 0.2.1** you now have direct access to the `Note`, `Interval` and `Chord` classes so they can be extended. These can be found under `motive.constructors`._
 
 create a note:
 ```javascript
