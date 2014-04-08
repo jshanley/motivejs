@@ -10,6 +10,7 @@ import "notations/";
 
 import "note/";
 import "interval/";
+import "key/";
 import "palette/";
 import "chord/";
 

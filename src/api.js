@@ -1,5 +1,9 @@
 motive.abc = abc;
 
+motive.key = function(keyInput) {
+  return new Key(keyInput);
+};
+
 motive.note = function(noteInput) {
   return new Note(noteInput);
 };
@@ -15,7 +19,7 @@ motive.interval = function(intervalInput) {
 motive.circles = circles;
 
 motive.constructors = {
-	Note: Note,
-	Interval: Interval,
-	Chord: Chord
+  Note: Note,
+  Interval: Interval,
+  Chord: Chord
 };

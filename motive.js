@@ -149,6 +149,18 @@
       };
     })(interval_name);
   };
+  regex.validate.keyName = function(key_name) {
+
+    var key_regex = /^([A-G])(b+|\#+|x+)* ?(m|major|minor)?$/i;
+
+    return regex.makeValidation('key', key_regex, function(captures) {
+      return {
+        step: captures[1],
+        accidental: captures[2] ? captures[2] : '',
+        quality: captures[3] ? captures[3] : ''
+      };
+    })(key_name);
+  };
   regex.validate.chordName = function(chord_name) {
 
     // lets split up this ugly regex
@@ -616,6 +628,29 @@
 
     return this;
   };
+  var Key = function(keyInput) {
+    var parsed = regex.validate.keyName(keyInput).parse();
+    if (!parsed) {
+      throw new Error('Invalid key name: ' + keyInput.toString());
+    }
+    if (/[a-g]/.test(parsed.step) || parsed.quality === 'minor' || parsed.quality === 'm') {
+      this.mode = 'minor';
+    } else {
+      this.mode = 'major';
+    }
+    // now that we have the mode, enforce uppercase
+    parsed.step = parsed.step.toUpperCase();
+    // get fifths for major key
+    this.fifths = circles.fifths.indexOf(parsed.step + parsed.accidental);
+    // minor is 3 fifths less than major
+    if (this.mode === 'minor') {
+      this.fifths -= 3;
+      this.name = parsed.step.toLowerCase() + parsed.accidental + ' minor';
+    } else {
+      this.name = parsed.step + parsed.accidental + ' major';
+    }
+    return this;
+  }
   var palette = {};
 
   function piaCompare(a, b) {
@@ -935,6 +970,10 @@
   };
 
   motive.abc = abc;
+
+  motive.key = function(keyInput) {
+    return new Key(keyInput);
+  };
 
   motive.note = function(noteInput) {
     return new Note(noteInput);
