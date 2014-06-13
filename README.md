@@ -60,6 +60,11 @@ myChord.intervals;     // [ 'R', 'm3', 'P5', 'm7' ]
 // this is an array of motive.Note objects representing the members
 myChord.notes;   // [ '[note D]', '[note F]', '[note A]', '[note C]' ]
 ```
+
+## Contributing
+
+See the notes in the [README](src/README.md) for the **src** directory.
+
 ## License
 Copyright (c) 2014 John Shanley.
 
