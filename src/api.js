@@ -16,6 +16,14 @@ motive.interval = function(intervalInput) {
   return new Interval(intervalInput);
 };
 
+motive.pattern = function(patternInput) {
+  return new Pattern(patternInput);
+};
+
+motive.noteCollection = function(noteCollectionInput) {
+  return new NoteCollection(noteCollectionInput);
+};
+
 motive.circles = circles;
 
 motive.constructors = {

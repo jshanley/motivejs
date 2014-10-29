@@ -14,6 +14,9 @@ import "key/";
 import "palette/";
 import "chord/";
 
+import "pattern/";
+import "note_collection/";
+
 import "api";
 
 import "outro";
