@@ -1,0 +1,30 @@
+{
+  "name": "notive",
+  "main": "motive.js",
+  "version": "0.3.0",
+  "homepage": "https://github.com/jshanley/motivejs",
+  "authors": [
+    "John Shanley <john.michael.shanley@gmail.com>"
+  ],
+  "description": "JavaScript music theory library",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "music",
+    "theory"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "src",
+    "index.js",
+    "Gruntfile.js"
+  ]
+}
