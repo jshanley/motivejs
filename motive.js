@@ -552,56 +552,56 @@
     return '[note ' + name + ']';
   };
   var abc = function(abcInput) {
-    var sci = notations.abc.abcToScientific(abcInput);
-    return new Note(sci);
+      var sci = notations.abc.abcToScientific(abcInput);
+      return new Note(sci);
+    }
+    // 1,4,5 are treated differently than other interval sizes,
+    //   this helps to identify them immediately
+  function getIntervalSpecies(size) {
+    if (size === 1 || size === 4 || size === 5) {
+      return 'P';
+    } else {
+      return 'M';
+    }
   }
-  // 1,4,5 are treated differently than other interval sizes,
-  //   this helps to identify them immediately
-    function getIntervalSpecies(size) {
-      if (size === 1 || size === 4 || size === 5) {
-        return 'P';
-      } else {
-        return 'M';
-      }
-    }
 
-    function getIntervalSemitones(quality, normalizedSize, octaves, species) {
-      // semitones from root of each note of the major scale
-      var major = [0, 2, 4, 5, 7, 9, 11];
+  function getIntervalSemitones(quality, normalizedSize, octaves, species) {
+    // semitones from root of each note of the major scale
+    var major = [0, 2, 4, 5, 7, 9, 11];
 
-      // qualityInt represents the integer difference from a major or perfect quality interval
-      //   for example, m3 will yield -1 since a minor 3rd is one semitone less than a major 3rd
-      var qualityInt = 0;
-      var q1 = quality.slice(0, 1);
-      switch (q1) {
-        case 'P':
-        case 'M':
-          break;
-        case 'm':
+    // qualityInt represents the integer difference from a major or perfect quality interval
+    //   for example, m3 will yield -1 since a minor 3rd is one semitone less than a major 3rd
+    var qualityInt = 0;
+    var q1 = quality.slice(0, 1);
+    switch (q1) {
+      case 'P':
+      case 'M':
+        break;
+      case 'm':
+        qualityInt -= 1;
+        break;
+      case 'A':
+        qualityInt += 1;
+        break;
+      case 'd':
+        if (species === 'M') {
+          qualityInt -= 2;
+        } else {
           qualityInt -= 1;
-          break;
-        case 'A':
-          qualityInt += 1;
-          break;
-        case 'd':
-          if (species === 'M') {
-            qualityInt -= 2;
-          } else {
-            qualityInt -= 1;
-          }
-          break;
-      }
-      // handle additional augmentations or diminutions
-      for (var q = 0; q < quality.slice(1).length; q++) {
-        if (quality.slice(1)[q] === 'd') {
-          qualityInt -= 1;
-        } else if (quality.slice(1)[q] === 'A') {
-          qualityInt += 1;
         }
-      }
-
-      return major[normalizedSize - 1] + qualityInt + (octaves * 12);
+        break;
     }
+    // handle additional augmentations or diminutions
+    for (var q = 0; q < quality.slice(1).length; q++) {
+      if (quality.slice(1)[q] === 'd') {
+        qualityInt -= 1;
+      } else if (quality.slice(1)[q] === 'A') {
+        qualityInt += 1;
+      }
+    }
+
+    return major[normalizedSize - 1] + qualityInt + (octaves * 12);
+  }
   var Interval = function(interval_name) {
     var parsed = regex.validate.intervalName(interval_name).parse();
     if (!parsed) {
@@ -629,16 +629,18 @@
     return this;
   };
   var Key = function(keyInput) {
+    // run input through validation
     var parsed = regex.validate.keyName(keyInput).parse();
     if (!parsed) {
       throw new Error('Invalid key name: ' + keyInput.toString());
     }
+    // assign mode based on the parsed input's quality
     if (/[a-g]/.test(parsed.step) || parsed.quality === 'minor' || parsed.quality === 'm') {
       this.mode = 'minor';
     } else {
       this.mode = 'major';
     }
-    // now that we have the mode, enforce uppercase
+    // now that we have the mode, enforce uppercase for root note
     parsed.step = parsed.step.toUpperCase();
     // get fifths for major key
     this.fifths = circles.fifths.indexOf(parsed.step + parsed.accidental);
@@ -650,7 +652,7 @@
       this.name = parsed.step + parsed.accidental + ' major';
     }
     return this;
-  }
+  };
   var palette = {};
 
   function piaCompare(a, b) {
@@ -769,14 +771,14 @@
     };
 
     /* might want this later
-  var intervalType = function(parsed_interval) {
-    if (parsed_interval.quality === 'P' || parsed_interval.quality === 'M') {
-      return 'natural';
-    } else {
-      return 'altered';
-    }
-  };
-*/
+      var intervalType = function(parsed_interval) {
+        if (parsed_interval.quality === 'P' || parsed_interval.quality === 'M') {
+          return 'natural';
+        } else {
+          return 'altered';
+        }
+      };
+    */
     var alterationType = function(alteration) {
       if (/sus/.test(alteration)) {
         return 'susX';
@@ -969,6 +971,34 @@
     return '[chord ' + this.name + ']';
   };
 
+  var Pattern = function(a) {
+    this.intervalNames = a;
+    return this;
+  };
+
+  Pattern.prototype.from = function(note) {
+    note = utilities.toObject(note, motive.note)
+    return motive.noteCollection(this.intervalNames.map(function(d) {
+      if (d === 'R') d = 'P1';
+      return note.up(d);
+    }))
+  }
+
+  var NoteCollection = function(noteArray) {
+    this.array = noteArray || [];
+    return this;
+  };
+
+  NoteCollection.prototype.add = function(item) {
+    this.array.push(item);
+    return this;
+  };
+  NoteCollection.prototype.names = function() {
+    return this.array.map(function(d) {
+      return d.name;
+    })
+  };
+
   motive.abc = abc;
 
   motive.key = function(keyInput) {
@@ -985,6 +1015,14 @@
 
   motive.interval = function(intervalInput) {
     return new Interval(intervalInput);
+  };
+
+  motive.pattern = function(patternInput) {
+    return new Pattern(patternInput);
+  };
+
+  motive.noteCollection = function(noteCollectionInput) {
+    return new NoteCollection(noteCollectionInput);
   };
 
   motive.circles = circles;
