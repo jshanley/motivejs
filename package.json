@@ -1,7 +1,7 @@
 {
   "name": "motive",
   "description": "JavaScript music theory library",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "homepage": "http://jshanley.github.io/motivejs/",
   "author": {
     "name": "John Shanley",
