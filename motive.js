@@ -937,54 +937,6 @@
 
   })();
 
-  function getChordNotes(intervals, root) {
-    var output = [];
-    output.push(root);
-    for (var i = 1; i < intervals.length; i++) {
-      output.push(root.up(intervals[i]));
-    }
-    return output;
-  }
-  var Chord = function(chord_name) {
-    var parsed = regex.validate.chordName(chord_name).parse();
-    if (!parsed) {
-      throw new Error('Invalid chord name.');
-    }
-    var speciesIntervals = getSpeciesIntervals(parsed.species);
-
-    var memberIntervals = palette.applyAlterations(speciesIntervals, parsed.alterations);
-
-    this.name = chord_name;
-    this.type = 'chord';
-    this.root = new Note(parsed.root);
-    this.formula = parsed.species + parsed.alterations;
-    this.isSlash = parsed.slash === '/' ? true : false;
-    this.bass = this.isSlash ? new Note(parsed.bass) : this.root;
-    this.intervals = memberIntervals;
-    this.notes = getChordNotes(this.intervals, this.root);
-  }
-
-  Chord.prototype.transpose = function(direction, interval) {
-    return new Chord(utilities.transpose(this.root, direction, interval).name + this.formula);
-  };
-  Chord.prototype.toString = function() {
-    return '[chord ' + this.name + ']';
-  };
-
-  var Pattern = function(a) {
-    this.intervalNames = a;
-    return this;
-  };
-
-  Pattern.prototype.from = function(note) {
-    note = utilities.toObject(note, motive.note)
-    return motive.noteCollection(this.intervalNames.map(function(d) {
-      if (d === 'R') d = 'P1';
-      return note.up(d);
-    }))
-  }
-
-
   var NoteCollection = function(noteArray) {
     noteArray = noteArray || [];
     this.array = noteArray.map(function(d) {
@@ -1044,6 +996,54 @@
     });
     return motive.pattern(intervals);
   };
+
+  function getChordNotes(intervals, root) {
+    var output = [];
+    output.push(root);
+    for (var i = 1; i < intervals.length; i++) {
+      output.push(root.up(intervals[i]));
+    }
+    return motive.noteCollection(output);
+  }
+  var Chord = function(chord_name) {
+    var parsed = regex.validate.chordName(chord_name).parse();
+    if (!parsed) {
+      throw new Error('Invalid chord name.');
+    }
+    var speciesIntervals = getSpeciesIntervals(parsed.species);
+
+    var memberIntervals = palette.applyAlterations(speciesIntervals, parsed.alterations);
+
+    this.name = chord_name;
+    this.type = 'chord';
+    this.root = new Note(parsed.root);
+    this.formula = parsed.species + parsed.alterations;
+    this.isSlash = parsed.slash === '/' ? true : false;
+    this.bass = this.isSlash ? new Note(parsed.bass) : this.root;
+    this.intervals = memberIntervals;
+    this.notes = getChordNotes(this.intervals, this.root);
+  }
+
+  Chord.prototype.transpose = function(direction, interval) {
+    return new Chord(utilities.transpose(this.root, direction, interval).name + this.formula);
+  };
+  Chord.prototype.toString = function() {
+    return '[chord ' + this.name + ']';
+  };
+
+  var Pattern = function(a) {
+    this.intervalNames = a;
+    return this;
+  };
+
+  Pattern.prototype.from = function(note) {
+    note = utilities.toObject(note, motive.note)
+    return motive.noteCollection(this.intervalNames.map(function(d) {
+      if (d === 'R') d = 'P1';
+      return note.up(d);
+    }))
+  }
+
 
   motive.abc = abc;
 
