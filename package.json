@@ -1,37 +1,29 @@
 {
-  "name": "motive",
-  "description": "JavaScript music theory library",
-  "version": "0.4.0",
-  "homepage": "http://jshanley.github.io/motivejs/",
-  "author": {
-    "name": "John Shanley",
-    "url": "https://github.com/jshanley"
+  "name": "motive-site",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "gulp": "^3.8.11",
+    "gulp-sass": "^2.0.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-live-server": "0.0.14",
+    "gulp-sass": "^2.0.0",
+    "run-sequence": "^1.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/jshanley/motivejs.git"
   },
+  "author": "",
+  "license": "WTFPL",
   "bugs": {
     "url": "https://github.com/jshanley/motivejs/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jshanley/motivejs/blob/master/LICENSE-MIT"
-    }
-  ],
-  "main": "index.js",
-  "engines": {
-    "node": ">= 0.8.0"
-  },
-  "scripts": {
-    "test": "grunt test"
-  },
-  "devDependencies": {
-    "grunt": "^0.4.2",
-    "grunt-contrib-nodeunit": "~0.3.2",
-    "grunt-contrib-uglify": "~0.4.0",
-    "grunt-smash": "^0.1.0",
-    "grunt-jsbeautifier": "^0.2.6"
-  }
+  "homepage": "https://github.com/jshanley/motivejs"
 }

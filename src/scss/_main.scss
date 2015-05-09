@@ -1,0 +1,20 @@
+$modular-scale-ratio: $minor-third;
+$modular-scale-base: 1em;
+
+body {
+  margin: 0;
+  font-family: 'Neuton', serif;
+  font-size: 16px;
+  color: #383432;
+}
+
+h1 {
+  font-size: modular-scale(7);
+  font-weight: 800;
+}
+
+section {
+  @include outer-container(54em);
+  header { font-size: modular-scale(3); }
+  p { font-size: modular-scale(1); }
+}

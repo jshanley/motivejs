@@ -1,0 +1,30 @@
+html {
+  box-sizing: border-box; }
+
+*,
+*::after,
+*::before {
+  box-sizing: inherit; }
+
+body {
+  margin: 0;
+  font-family: 'Neuton', serif;
+  font-size: 16px;
+  color: #383432; }
+
+h1 {
+  font-size: 3.58318em;
+  font-weight: 800; }
+
+section {
+  max-width: 54em;
+  margin-left: auto;
+  margin-right: auto; }
+  section::after {
+    clear: both;
+    content: "";
+    display: table; }
+  section header {
+    font-size: 1.728em; }
+  section p {
+    font-size: 1.2em; }
