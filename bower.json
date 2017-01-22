@@ -1,7 +1,7 @@
 {
-  "name": "notive",
+  "name": "motive",
   "main": "motive.js",
-  "version": "0.4.0",
+  "version": "0.5.1",
   "homepage": "https://github.com/jshanley/motivejs",
   "authors": [
     "John Shanley <john.michael.shanley@gmail.com>"
@@ -25,6 +25,7 @@
     "tests",
     "src",
     "index.js",
-    "Gruntfile.js"
+    "Makefile",
+    "tsconfig.json"
   ]
 }
