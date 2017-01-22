@@ -1,22 +1,50 @@
-import "intro";
+import _abc from './abc';
+import {Circle} from './math';
+import * as _circles from './circles';
 
-import "math/";
-import "primitives/";
-import "convert/";
-import "regex/";
-import "circles/";
-import "utilities/";
-import "notations/";
+import Key from './key';
+import Note from './note';
+import Chord from './chord';
+import Interval from './interval';
+import Pattern from './pattern';
+import NoteCollection from './note-collection';
 
-import "note/";
-import "interval/";
-import "key/";
-import "palette/";
-import "chord/";
 
-import "pattern/";
-import "note_collection/";
+namespace motive {
 
-import "api";
+  export const abc = _abc;
 
-import "outro";
+  export const key = function(keyInput) {
+    return new Key(keyInput);
+  };
+
+  export const note = function(noteInput) {
+    return new Note(noteInput);
+  };
+
+  export const chord = function(chordInput) {
+    return new Chord(chordInput);
+  };
+
+  export const interval = function(intervalInput) {
+    return new Interval(intervalInput);
+  };
+
+  export const pattern = function(patternInput) {
+    return new Pattern(patternInput);
+  };
+
+  export const noteCollection = function(noteCollectionInput) {
+    return new NoteCollection(noteCollectionInput);
+  };
+
+  export const circles = _circles;
+
+  export const constructors = {
+    Note: Note,
+    Interval: Interval,
+    Chord: Chord
+  };
+}
+
+export default motive;

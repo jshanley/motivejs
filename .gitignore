@@ -43,6 +43,7 @@ Thumbs.db
 *.esproj
 nbproject
 *.sublime-*
+.vscode
 
 # Komodo
 *.komodoproject

@@ -28,10 +28,18 @@
     "test": "grunt test"
   },
   "devDependencies": {
+    "browserify": "^13.3.0",
     "grunt": "^0.4.2",
     "grunt-contrib-nodeunit": "~0.3.2",
     "grunt-contrib-uglify": "~0.4.0",
+    "grunt-jsbeautifier": "^0.2.6",
     "grunt-smash": "^0.1.0",
-    "grunt-jsbeautifier": "^0.2.6"
+    "tsify": "^3.0.0",
+    "typescript": "^2.1.5",
+    "uglifyjs": "^2.4.10"
+  },
+  "dependencies": {
+    "exorcist": "^0.4.0",
+    "google-closure-compiler": "^20161201.0.0"
   }
 }
