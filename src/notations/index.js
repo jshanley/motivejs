@@ -1,3 +1,0 @@
-var notations = {};
-
-import "abc/";
