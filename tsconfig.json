@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
+        "module": "es2015",
         "target": "es5",
+        "outDir": "tmp",
         "noImplicitAny": false,
         "sourceMap": false
     }
