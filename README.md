@@ -4,20 +4,31 @@
 
 ## Install and Use
 ### node:
-```
+``` bash
 npm install motive
+# OR
+yarn add motive
 ```
-```javascript
+
+``` javascript
 var motive = require('motive');
 ```
 ### browser:
-```html
-<script src="path/to/motive.min.js"></script>
+
+There is a UMD build of the library available in the [dist](dist) directory.
+``` html
+<script src="path/to/motive.umd.js"></script>
 ```
 
-This will create a global variable `motive`.
+This will expose `motive` in the global namespace.
 
-alternatively, you can require `motive.js` or `motive.min.js` as an AMD module.
+alternatively, you can require `motive.umd.js` as an AMD module.
+
+If you still use Bower, you can also install motive this way:
+
+``` bash
+bower install motive
+```
 
 ## Examples
 
