@@ -1,6 +1,6 @@
 {
   "name": "motive",
-  "main": "motive.js",
+  "main": "dist/motive.umd.js",
   "version": "0.5.1",
   "homepage": "https://github.com/jshanley/motivejs",
   "authors": [
