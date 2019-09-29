@@ -66,7 +66,6 @@ function makeValidation(name, exp, parser) {
         };
     };
 }
-
 function splitStringByPattern(str, pattern) {
     var output = [];
     while (pattern.test(str)) {
@@ -230,12 +229,10 @@ pitchNames.atIndex = function (index) {
     return this.array[note_index] + octave.toString(10);
 };
 
-
-
-var _circles = Object.freeze({
-	fifths: fifths,
-	intervals: intervals,
-	pitchNames: pitchNames
+var _circles = /*#__PURE__*/Object.freeze({
+    fifths: fifths,
+    intervals: intervals,
+    pitchNames: pitchNames
 });
 
 function transpose(note_name, direction, interval) {
@@ -265,7 +262,6 @@ function transpose(note_name, direction, interval) {
     }
     return new_note_name + new_octave.toString(10);
 }
-
 function isString(input) {
     return typeof input === 'string';
 }
@@ -417,7 +413,7 @@ function abcToScientific(abcInput) {
     if (/[A-G]/.test(parsed.step)) {
         octave = 4;
     }
-    else {
+    else { // parsed step is lowercase
         octave = 5;
     }
     // get the total alter value of all accidentals present
@@ -436,7 +432,6 @@ function abcToScientific(abcInput) {
     }
     return output;
 }
-
 function scientificToAbc(scientific) {
     var parsed = validateNoteName(scientific).parse();
     if (!parsed || parsed.octave === null) {
@@ -591,7 +586,7 @@ var Pattern = /** @class */ (function () {
         this.intervalNames = intervals;
     }
     Pattern.prototype.from = function (item) {
-        var note = toObject(item, toNote$2);
+        var note = toObject(item, toNote$1);
         return new NoteCollection(this.intervalNames.map(function (d) {
             if (d === 'R')
                 d = 'P1';
@@ -600,7 +595,7 @@ var Pattern = /** @class */ (function () {
     };
     return Pattern;
 }());
-function toNote$2(item) {
+function toNote$1(item) {
     if (isString(item)) {
         return new Note(item);
     }
@@ -613,7 +608,7 @@ var NoteCollection = /** @class */ (function () {
     function NoteCollection(noteArray) {
         if (noteArray === void 0) { noteArray = []; }
         this.array = noteArray.map(function (d) {
-            return toObject(d, toNote$1);
+            return toObject(d, toNote$2);
         });
     }
     NoteCollection.prototype.contents = function () {
@@ -624,7 +619,7 @@ var NoteCollection = /** @class */ (function () {
         return this;
     };
     NoteCollection.prototype.contains = function (item) {
-        var note = toObject(item, toNote$1);
+        var note = toObject(item, toNote$2);
         var output = false;
         this.each(function (d) {
             if (d.isEquivalent(note))
@@ -633,12 +628,12 @@ var NoteCollection = /** @class */ (function () {
         return output;
     };
     NoteCollection.prototype.add = function (item) {
-        var note = toObject(item, toNote$1);
+        var note = toObject(item, toNote$2);
         this.array.push(note);
         return this;
     };
     NoteCollection.prototype.remove = function (item) {
-        var note = toObject(item, toNote$1);
+        var note = toObject(item, toNote$2);
         this.array = this.array.filter(function (d) {
             return !d.isEquivalent(note);
         });
@@ -653,7 +648,7 @@ var NoteCollection = /** @class */ (function () {
         });
     };
     NoteCollection.prototype.patternFrom = function (item) {
-        var note = toObject(item, toNote$1);
+        var note = toObject(item, toNote$2);
         if (!this.contains(note))
             return new Pattern([]);
         var intervals = [];
@@ -669,10 +664,9 @@ var NoteCollection = /** @class */ (function () {
         });
         return new Pattern(intervals);
     };
-    
     return NoteCollection;
 }());
-function toNote$1(string) {
+function toNote$2(string) {
     return new Note(string);
 }
 
@@ -1040,4 +1034,3 @@ var motive;
 var motive$1 = motive;
 
 module.exports = motive$1;
-//# sourceMappingURL=motive.cjs.js.map
