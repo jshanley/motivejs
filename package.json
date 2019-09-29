@@ -24,15 +24,16 @@
   "module": "dist/motive.ems.js",
   "browser": "dist/motive.umd.js",
   "engines": {
-    "node": ">= 5.12.0"
+    "node": ">= 12.7.0"
   },
   "scripts": {
+    "build": "tsc -p tsconfig.json && rollup -c rollup.config.js",
     "test": "./node_modules/.bin/nodeunit"
   },
   "devDependencies": {
-    "nodeunit": "^0.11.1",
-    "rollup": "^0.50.0",
-    "typescript": "^2.5.3"
+    "nodeunit": "^0.11.3",
+    "rollup": "^1.21.4",
+    "typescript": "^3.6.3"
   },
   "dependencies": {}
 }

@@ -8,5 +8,4 @@ export default {
     { file: pkg.module, format: 'es' },
     { file: pkg.browser, format: 'umd', name: 'motive' },
   ],
-  sourcemap: true
 }
