@@ -28,7 +28,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json && rollup -c rollup.config.js",
-    "test": "./node_modules/.bin/nodeunit"
+    "test": "nodeunit"
   },
   "devDependencies": {
     "nodeunit": "^0.11.3",
