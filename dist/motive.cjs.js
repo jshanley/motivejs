@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 var operators = {
     'b': -1,
     '#': 1,
@@ -229,7 +231,7 @@ pitchNames.atIndex = function (index) {
     return this.array[note_index] + octave.toString(10);
 };
 
-var _circles = /*#__PURE__*/Object.freeze({
+var circles = /*#__PURE__*/Object.freeze({
     fifths: fifths,
     intervals: intervals,
     pitchNames: pitchNames
@@ -267,18 +269,6 @@ function isString(input) {
 }
 function isNumber(input) {
     return typeof input === 'number';
-}
-// ensures that a function requiring a note (or similar type of) object as input
-//   gets an object rather than a string representation of it.
-//   'obj' will be the function used to create the object.
-function toObject(input, obj) {
-    if (isString(input)) {
-        input = obj(input);
-    }
-    if (typeof input !== 'object') {
-        throw new TypeError('Input must be an object or string.');
-    }
-    return input;
 }
 
 var Note = /** @class */ (function () {
@@ -511,164 +501,6 @@ var Key = /** @class */ (function () {
     }
     return Key;
 }());
-
-var Interval = /** @class */ (function () {
-    function Interval(intervalName) {
-        var parsed = validateIntervalName(intervalName).parse();
-        if (!parsed) {
-            throw new Error('Invalid interval name.');
-        }
-        this.steps = parsed.size - 1;
-        var normalizedSize = parsed.size > 7 ? (this.steps % 7) + 1 : parsed.size;
-        this.name = intervalName;
-        this.type = 'interval';
-        this.quality = parsed.quality;
-        this.size = parsed.size;
-        this.normalized = this.quality + normalizedSize.toString(10);
-        this.species = getIntervalSpecies(normalizedSize);
-        // this is kinda ugly but it works...
-        //   dividing by 7 evenly returns an extra octave if the value is a multiple of 7
-        this.octaves = Math.floor(this.size / 7.001);
-        this.semitones = getIntervalSemitones(this.quality, normalizedSize, this.octaves, this.species);
-    }
-    return Interval;
-}());
-function getIntervalSemitones(quality, normalizedSize, octaves, species) {
-    // semitones from root of each note of the major scale
-    var major = [0, 2, 4, 5, 7, 9, 11];
-    // qualityInt represents the integer difference from a major or perfect quality interval
-    //   for example, m3 will yield -1 since a minor 3rd is one semitone less than a major 3rd
-    var qualityInt = 0;
-    var q1 = quality.slice(0, 1);
-    switch (q1) {
-        case 'P':
-        case 'M':
-            break;
-        case 'm':
-            qualityInt -= 1;
-            break;
-        case 'A':
-            qualityInt += 1;
-            break;
-        case 'd':
-            if (species === 'M') {
-                qualityInt -= 2;
-            }
-            else {
-                qualityInt -= 1;
-            }
-            break;
-    }
-    // handle additional augmentations or diminutions
-    for (var q = 0; q < quality.slice(1).length; q++) {
-        if (quality.slice(1)[q] === 'd') {
-            qualityInt -= 1;
-        }
-        else if (quality.slice(1)[q] === 'A') {
-            qualityInt += 1;
-        }
-    }
-    return major[normalizedSize - 1] + qualityInt + (octaves * 12);
-}
-// 1,4,5 are treated differently than other interval sizes,
-//   this helps to identify them immediately
-function getIntervalSpecies(size) {
-    if (size === 1 || size === 4 || size === 5) {
-        return 'P';
-    }
-    else {
-        return 'M';
-    }
-}
-
-var Pattern = /** @class */ (function () {
-    function Pattern(intervals) {
-        this.intervalNames = intervals;
-    }
-    Pattern.prototype.from = function (item) {
-        var note = toObject(item, toNote$1);
-        return new NoteCollection(this.intervalNames.map(function (d) {
-            if (d === 'R')
-                d = 'P1';
-            return note.up(d);
-        }));
-    };
-    return Pattern;
-}());
-function toNote$1(item) {
-    if (isString(item)) {
-        return new Note(item);
-    }
-    else {
-        return item;
-    }
-}
-
-var NoteCollection = /** @class */ (function () {
-    function NoteCollection(noteArray) {
-        if (noteArray === void 0) { noteArray = []; }
-        this.array = noteArray.map(function (d) {
-            return toObject(d, toNote$2);
-        });
-    }
-    NoteCollection.prototype.contents = function () {
-        return this.array;
-    };
-    NoteCollection.prototype.each = function (fn) {
-        this.array.forEach(fn);
-        return this;
-    };
-    NoteCollection.prototype.contains = function (item) {
-        var note = toObject(item, toNote$2);
-        var output = false;
-        this.each(function (d) {
-            if (d.isEquivalent(note))
-                output = true;
-        });
-        return output;
-    };
-    NoteCollection.prototype.add = function (item) {
-        var note = toObject(item, toNote$2);
-        this.array.push(note);
-        return this;
-    };
-    NoteCollection.prototype.remove = function (item) {
-        var note = toObject(item, toNote$2);
-        this.array = this.array.filter(function (d) {
-            return !d.isEquivalent(note);
-        });
-        return this;
-    };
-    NoteCollection.prototype.map = function (fn) {
-        return new NoteCollection(this.array.map(fn));
-    };
-    NoteCollection.prototype.names = function () {
-        return this.array.map(function (d) {
-            return d.name;
-        });
-    };
-    NoteCollection.prototype.patternFrom = function (item) {
-        var note = toObject(item, toNote$2);
-        if (!this.contains(note))
-            return new Pattern([]);
-        var intervals = [];
-        this.each(function (d) {
-            intervals.push(new Interval(d.intervalFrom(note)));
-        });
-        intervals.sort(function (a, b) {
-            return a.size - b.size;
-        });
-        intervals = intervals.map(function (d) {
-            var name = d.name !== 'P1' ? d.name : 'R';
-            return name;
-        });
-        return new Pattern(intervals);
-    };
-    return NoteCollection;
-}());
-function toNote$2(string) {
-    return new Note(string);
-}
 
 function validateChordName(chordName) {
     // lets split up this ugly regex
@@ -919,7 +751,7 @@ function getChordNotes(intervals, root) {
     for (var i = 1; i < intervals.length; i++) {
         output.push(root.up(intervals[i]));
     }
-    return new NoteCollection(output);
+    return output;
 }
 var getSpeciesIntervals = (function () {
     var basic_types = {
@@ -1003,34 +835,79 @@ var getSpeciesIntervals = (function () {
     };
 })();
 
-var motive;
-(function (motive) {
-    motive.abc = abc;
-    motive.key = function (keyInput) {
-        return new Key(keyInput);
-    };
-    motive.note = function (noteInput) {
-        return new Note(noteInput);
-    };
-    motive.chord = function (chordInput) {
-        return new Chord(chordInput);
-    };
-    motive.interval = function (intervalInput) {
-        return new Interval(intervalInput);
-    };
-    motive.pattern = function (patternInput) {
-        return new Pattern(patternInput);
-    };
-    motive.noteCollection = function (noteCollectionInput) {
-        return new NoteCollection(noteCollectionInput);
-    };
-    motive.circles = _circles;
-    motive.constructors = {
-        Note: Note,
-        Interval: Interval,
-        Chord: Chord
-    };
-})(motive || (motive = {}));
-var motive$1 = motive;
+var Interval = /** @class */ (function () {
+    function Interval(intervalName) {
+        var parsed = validateIntervalName(intervalName).parse();
+        if (!parsed) {
+            throw new Error('Invalid interval name.');
+        }
+        this.steps = parsed.size - 1;
+        var normalizedSize = parsed.size > 7 ? (this.steps % 7) + 1 : parsed.size;
+        this.name = intervalName;
+        this.type = 'interval';
+        this.quality = parsed.quality;
+        this.size = parsed.size;
+        this.normalized = this.quality + normalizedSize.toString(10);
+        this.species = getIntervalSpecies(normalizedSize);
+        // this is kinda ugly but it works...
+        //   dividing by 7 evenly returns an extra octave if the value is a multiple of 7
+        this.octaves = Math.floor(this.size / 7.001);
+        this.semitones = getIntervalSemitones(this.quality, normalizedSize, this.octaves, this.species);
+    }
+    return Interval;
+}());
+function getIntervalSemitones(quality, normalizedSize, octaves, species) {
+    // semitones from root of each note of the major scale
+    var major = [0, 2, 4, 5, 7, 9, 11];
+    // qualityInt represents the integer difference from a major or perfect quality interval
+    //   for example, m3 will yield -1 since a minor 3rd is one semitone less than a major 3rd
+    var qualityInt = 0;
+    var q1 = quality.slice(0, 1);
+    switch (q1) {
+        case 'P':
+        case 'M':
+            break;
+        case 'm':
+            qualityInt -= 1;
+            break;
+        case 'A':
+            qualityInt += 1;
+            break;
+        case 'd':
+            if (species === 'M') {
+                qualityInt -= 2;
+            }
+            else {
+                qualityInt -= 1;
+            }
+            break;
+    }
+    // handle additional augmentations or diminutions
+    for (var q = 0; q < quality.slice(1).length; q++) {
+        if (quality.slice(1)[q] === 'd') {
+            qualityInt -= 1;
+        }
+        else if (quality.slice(1)[q] === 'A') {
+            qualityInt += 1;
+        }
+    }
+    return major[normalizedSize - 1] + qualityInt + (octaves * 12);
+}
+// 1,4,5 are treated differently than other interval sizes,
+//   this helps to identify them immediately
+function getIntervalSpecies(size) {
+    if (size === 1 || size === 4 || size === 5) {
+        return 'P';
+    }
+    else {
+        return 'M';
+    }
+}
 
-module.exports = motive$1;
+exports.Chord = Chord;
+exports.Circle = Circle;
+exports.Interval = Interval;
+exports.Key = Key;
+exports.Note = Note;
+exports.abc = abc;
+exports.circles = circles;

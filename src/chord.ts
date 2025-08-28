@@ -1,8 +1,7 @@
 import Note from './note';
-import NoteCollection from './note-collection';
 import validateChordName from './validators/chord';
-import {transpose} from './utilities';
 import {applyAlterations} from './palette';
+import Interval from './interval';
 
 
 class Chord {
@@ -13,8 +12,8 @@ class Chord {
   formula: string;
   isSlash: boolean;
   bass: Note;
-  intervals: string[];
-  notes: NoteCollection;
+  intervals: Array<Interval>;
+  notes: Array<Note>;
 
   constructor(chordName: string) {
     var parsed = validateChordName(chordName).parse();
@@ -51,7 +50,7 @@ function getChordNotes(intervals, root) {
   for (var i = 1; i < intervals.length; i++) {
     output.push(root.up(intervals[i]));
   }
-  return new NoteCollection(output);
+  return output;
 }
 
 var getSpeciesIntervals = (function(){
