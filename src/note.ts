@@ -1,43 +1,19 @@
-import {mtof} from './convert';
 import {isString, isNumber, transpose} from './utilities';
 import {fifths, intervals, pitchNames} from './circles';
 import validateNoteName from './validators/note';
-import {scientificToAbc} from './abc';
+import Pitch from './pitch';
 
 
-interface INote {
-  name: string;
-  type: 'note'|'pitch';
-  pitchClass: number;
-  parts: {
-    step: string;
-    accidental: string;
-  }
-}
-interface IPitch {
-  octave: number;
-  scientific: string;
-  abc: string;
-  midi: number;
-  frequency: number;
-}
 
 type UserInputNote = Note | string;
 
-class Note implements INote, IPitch {
-
+class Note {
   name: string;
-  type: 'note'|'pitch';
   pitchClass: number;
   parts: {
     step: string;
     accidental: string;
   }
-  octave: number;
-  scientific: string;
-  abc: string;
-  midi: number;
-  frequency: number;
 
   constructor(noteName: string);
   constructor(midiNumber: number);
@@ -56,66 +32,57 @@ class Note implements INote, IPitch {
       throw new Error('Invalid note name.');
     }
 
-    this.name = name;
-    this.type = 'note';
+    // For Note class, we only store the note name without octave
+    this.name = parsed.step + parsed.accidental;
     this.pitchClass = pitchNames.indexOf(parsed.step + parsed.accidental);
 
     this.parts = {
       step: parsed.step,
       accidental: parsed.accidental
     };
-
-    if (parsed.octave !== null) {
-      this.setOctave(parsed.octave);
-    }
-  }
-
-  setOctave(octave: number) {
-    if (!isNumber(octave)) {
-      throw new TypeError('Octave must be a number.');
-    }
-    this.name = this.parts.step + this.parts.accidental;
-    this.type = 'pitch';
-    this.octave = octave;
-    this.scientific = this.name + octave.toString(10);
-    this.abc = scientificToAbc(this.scientific);
-    this.midi = pitchNames.indexOf(this.scientific);
-    this.frequency = mtof(this.midi);
   }
 
   isEquivalent(other: UserInputNote) {
-    other = toNote(other);
-    if (this.name !== other.name) {
-      return false;
+    let otherNote: Note;
+    if (isString(other)) {
+      otherNote = new Note(other);
+    } else {
+      otherNote = other;
     }
-    if (this.type === 'pitch' && other.type === 'pitch' && this.octave !== other.octave) {
-      return false;
-    }
-    return true;
+    return this.name === otherNote.name;
   }
 
   isEnharmonic(other: UserInputNote) {
-    const otherNote = toNote(other);
-    if (this.pitchClass !== otherNote.pitchClass) {
-      return false;
+    let otherNote: Note;
+    if (isString(other)) {
+      otherNote = new Note(other);
+    } else {
+      otherNote = other;
     }
-    if (this.type === 'pitch' && otherNote.type === 'pitch' && (Math.abs(this.midi - otherNote.midi) > 11)) {
-      return false;
-    }
-    return true;
+    return this.pitchClass === otherNote.pitchClass;
   }
   
   transpose(direction: string, interval: string): Note {
-    return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
+    return new Note(transpose(this.name, direction, interval));
   }
 
   intervalTo(note: UserInputNote): string {
-    const otherNote = toNote(note);
+    let otherNote: Note;
+    if (isString(note)) {
+      otherNote = new Note(note);
+    } else {
+      otherNote = note;
+    }
     return intervals.atIndex(fifths.indexOf(otherNote.name) - fifths.indexOf(this.name));
   }
 
   intervalFrom(note: UserInputNote): string {
-    const otherNote = toNote(note);
+    let otherNote: Note;
+    if (isString(note)) {
+      otherNote = new Note(note);
+    } else {
+      otherNote = note;
+    }
     return intervals.atIndex(fifths.indexOf(this.name) - fifths.indexOf(otherNote.name));
   }
 
@@ -128,24 +95,10 @@ class Note implements INote, IPitch {
   }
 
   toString() {
-    let name;
-    if (this.type === 'note') {
-      name = this.name;
-    } else if (this.type === 'pitch'){
-      name = this.scientific;
-    }
-    return '[note ' + name + ']';
+    return '[note ' + this.name + ']';
   }
 
-}
-
-
-function toNote(input: UserInputNote): Note {
-  if (isString(input)) {
-    return new Note(input);
-  } else {
-    return input;
-  }
 }
 
 export default Note;
+export { UserInputNote };

@@ -85,14 +85,97 @@ function validateNoteName(noteName) {
     })(noteName);
 }
 
-function validateIntervalName(intervalName) {
-    var intervalRegex = /^(P|M|m|A+|d+)(\d+|U)$/;
-    return makeValidation('interval', intervalRegex, function (captures) {
+function validateAbcNoteName(abcNoteName) {
+    var abcRegex = /((?:\_|\=|\^)*)([a-g]|[A-G])((?:\,|\')*)/;
+    return makeValidation('abc-note', abcRegex, function (captures) {
         return {
-            quality: captures[1],
-            size: parseInt(captures[2], 10)
+            accidental: captures[1] ? captures[1] : '',
+            step: captures[2],
+            adjustments: captures[3] ? captures[3] : ''
         };
-    })(intervalName);
+    })(abcNoteName);
+}
+
+function abc(abcInput) {
+    var sci = abcToScientific(abcInput);
+    return sci;
+}
+var accidentals = {
+    "_": -1,
+    "=": 0,
+    "^": 1
+};
+// octave adjustments
+var adjustments = {
+    ",": -1,
+    "'": 1
+};
+function abcToScientific(abcInput) {
+    var parsed = validateAbcNoteName(abcInput).parse();
+    if (!parsed) {
+        throw new Error('Cannot convert ABC to scientific notation. Invalid ABC note name.');
+    }
+    var step, alter = 0, accidental, octave;
+    // if parsed step is a capital letter
+    if (/[A-G]/.test(parsed.step)) {
+        octave = 4;
+    }
+    else { // parsed step is lowercase
+        octave = 5;
+    }
+    // get the total alter value of all accidentals present
+    for (var c = 0; c < parsed.accidental.length; c++) {
+        alter += accidentals[parsed.accidental[c]];
+    }
+    // for each comma or apostrophe adjustment, adjust the octave value
+    for (var d = 0; d < parsed.adjustments.length; d++) {
+        octave += adjustments[parsed.adjustments[d]];
+    }
+    step = parsed.step.toUpperCase();
+    accidental = alterToAccidental(alter);
+    var output = step + accidental + octave.toString(10);
+    if (!validateNoteName(output).valid) {
+        throw new Error('Something went wrong converting ABC to scientific notation. Output invalid.');
+    }
+    return output;
+}
+function scientificToAbc(scientific) {
+    var parsed = validateNoteName(scientific).parse();
+    if (!parsed || parsed.octave === null) {
+        throw new Error('Cannot convert scientific to ABC. Invalid scientific note name.');
+    }
+    var abc_accidental = '', abc_step, abc_octave = '';
+    var alter = accidentalToAlter(parsed.accidental);
+    // add abc accidental symbols until alter is consumed (alter === 0)
+    while (alter < 0) {
+        abc_accidental += '_';
+        alter += 1;
+    }
+    while (alter > 0) {
+        abc_accidental += '^';
+        alter -= 1;
+    }
+    // step must be lowercase for octaves above 5
+    // add apostrophes or commas to get abc_octave
+    //   to the correct value
+    var o = parsed.octave;
+    if (o >= 5) {
+        abc_step = parsed.step.toLowerCase();
+        for (; o > 5; o--) {
+            abc_octave += '\'';
+        }
+    }
+    else {
+        abc_step = parsed.step.toUpperCase();
+        for (; o < 4; o++) {
+            abc_octave += ',';
+        }
+    }
+    var output = abc_accidental + abc_step + abc_octave;
+    if (!validateAbcNoteName(output).valid) {
+        throw new Error('Something went wrong converting scientific to ABC. Output invalid.');
+    }
+    return output;
 }
 
 var Circle = /** @class */ (function () {
@@ -121,6 +204,16 @@ function modulo(a, b) {
 }
 function mod12(a) {
     return modulo(a, 12);
+}
+
+function validateIntervalName(intervalName) {
+    var intervalRegex = /^(P|M|m|A+|d+)(\d+|U)$/;
+    return makeValidation('interval', intervalRegex, function (captures) {
+        return {
+            quality: captures[1],
+            size: parseInt(captures[2], 10)
+        };
+    })(intervalName);
 }
 
 var fifths = new Circle(['F', 'C', 'G', 'D', 'A', 'E', 'B']);
@@ -233,6 +326,47 @@ var circles = /*#__PURE__*/Object.freeze({
     pitchNames: pitchNames
 });
 
+function validateKeyName(keyName) {
+    var keyRegex = /^([A-G])(b+|\#+|x+)* ?(m|major|minor)?$/i;
+    return makeValidation('key', keyRegex, function (captures) {
+        return {
+            step: captures[1],
+            accidental: captures[2] ? captures[2] : '',
+            quality: captures[3] ? captures[3] : ''
+        };
+    })(keyName);
+}
+
+var Key = /** @class */ (function () {
+    function Key(keyInput) {
+        // run input through validation
+        var parsed = validateKeyName(keyInput).parse();
+        if (!parsed) {
+            throw new Error('Invalid key name: ' + keyInput.toString());
+        }
+        // assign mode based on the parsed input's quality
+        if (/[a-g]/.test(parsed.step) || parsed.quality === 'minor' || parsed.quality === 'm') {
+            this.mode = 'minor';
+        }
+        else {
+            this.mode = 'major';
+        }
+        // now that we have the mode, enforce uppercase for root note
+        parsed.step = parsed.step.toUpperCase();
+        // get fifths for major key
+        this.fifths = fifths.indexOf(parsed.step + parsed.accidental);
+        // minor is 3 fifths less than major
+        if (this.mode === 'minor') {
+            this.fifths -= 3;
+            this.name = parsed.step.toLowerCase() + parsed.accidental + ' minor';
+        }
+        else {
+            this.name = parsed.step + parsed.accidental + ' major';
+        }
+    }
+    return Key;
+}());
+
 function transpose(note_name, direction, interval) {
     if (direction !== 'up' && direction !== 'down') {
         throw new Error('Transpose direction must be either "up" or "down".');
@@ -283,58 +417,55 @@ var Note = /** @class */ (function () {
         if (!parsed) {
             throw new Error('Invalid note name.');
         }
-        this.name = name;
-        this.type = 'note';
+        // For Note class, we only store the note name without octave
+        this.name = parsed.step + parsed.accidental;
         this.pitchClass = pitchNames.indexOf(parsed.step + parsed.accidental);
         this.parts = {
             step: parsed.step,
             accidental: parsed.accidental
         };
-        if (parsed.octave !== null) {
-            this.setOctave(parsed.octave);
-        }
     }
-    Note.prototype.setOctave = function (octave) {
-        if (!isNumber(octave)) {
-            throw new TypeError('Octave must be a number.');
-        }
-        this.name = this.parts.step + this.parts.accidental;
-        this.type = 'pitch';
-        this.octave = octave;
-        this.scientific = this.name + octave.toString(10);
-        this.abc = scientificToAbc(this.scientific);
-        this.midi = pitchNames.indexOf(this.scientific);
-        this.frequency = mtof(this.midi);
-    };
     Note.prototype.isEquivalent = function (other) {
-        other = toNote(other);
-        if (this.name !== other.name) {
-            return false;
+        var otherNote;
+        if (isString(other)) {
+            otherNote = new Note(other);
         }
-        if (this.type === 'pitch' && other.type === 'pitch' && this.octave !== other.octave) {
-            return false;
+        else {
+            otherNote = other;
         }
-        return true;
+        return this.name === otherNote.name;
     };
     Note.prototype.isEnharmonic = function (other) {
-        var otherNote = toNote(other);
-        if (this.pitchClass !== otherNote.pitchClass) {
-            return false;
+        var otherNote;
+        if (isString(other)) {
+            otherNote = new Note(other);
         }
-        if (this.type === 'pitch' && otherNote.type === 'pitch' && (Math.abs(this.midi - otherNote.midi) > 11)) {
-            return false;
+        else {
+            otherNote = other;
         }
-        return true;
+        return this.pitchClass === otherNote.pitchClass;
     };
     Note.prototype.transpose = function (direction, interval) {
-        return new Note(transpose(this.type === 'pitch' ? this.scientific : this.name, direction, interval));
+        return new Note(transpose(this.name, direction, interval));
     };
     Note.prototype.intervalTo = function (note) {
-        var otherNote = toNote(note);
+        var otherNote;
+        if (isString(note)) {
+            otherNote = new Note(note);
+        }
+        else {
+            otherNote = note;
+        }
         return intervals.atIndex(fifths.indexOf(otherNote.name) - fifths.indexOf(this.name));
     };
     Note.prototype.intervalFrom = function (note) {
-        var otherNote = toNote(note);
+        var otherNote;
+        if (isString(note)) {
+            otherNote = new Note(note);
+        }
+        else {
+            otherNote = note;
+        }
         return intervals.atIndex(fifths.indexOf(this.name) - fifths.indexOf(otherNote.name));
     };
     Note.prototype.up = function (interval) {
@@ -344,159 +475,123 @@ var Note = /** @class */ (function () {
         return this.transpose('down', interval);
     };
     Note.prototype.toString = function () {
-        var name;
-        if (this.type === 'note') {
-            name = this.name;
-        }
-        else if (this.type === 'pitch') {
-            name = this.scientific;
-        }
-        return '[note ' + name + ']';
+        return '[note ' + this.name + ']';
     };
     return Note;
 }());
+
+var __extends = (undefined && undefined.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Pitch = /** @class */ (function (_super) {
+    __extends(Pitch, _super);
+    function Pitch(noteInput, octave) {
+        var _this = this;
+        if (isNumber(noteInput)) {
+            // Handle MIDI number input
+            var name_1 = pitchNames.atIndex(noteInput);
+            var parsed = validateNoteName(name_1).parse();
+            if (!parsed) {
+                throw new Error('Invalid note name from MIDI number.');
+            }
+            _this = _super.call(this, parsed.step + parsed.accidental) || this;
+            _this.setOctave(Math.floor(noteInput / 12) - 1);
+        }
+        else if (isString(noteInput)) {
+            var parsed = validateNoteName(noteInput).parse();
+            if (!parsed) {
+                throw new Error('Invalid note name.');
+            }
+            if (parsed.octave !== null) {
+                // Handle scientific notation (e.g., "C4")
+                _this = _super.call(this, parsed.step + parsed.accidental) || this;
+                _this.setOctave(parsed.octave);
+            }
+            else if (octave !== undefined) {
+                // Handle note name + octave parameters (e.g., "C", 4)
+                _this = _super.call(this, noteInput) || this;
+                _this.setOctave(octave);
+            }
+            else {
+                throw new Error('Octave must be specified for Pitch. Use Note class for notes without octave.');
+            }
+        }
+        else {
+            throw new TypeError('Input must be a string (note name or scientific notation) or number (MIDI).');
+        }
+        return _this;
+    }
+    Pitch.prototype.setOctave = function (octave) {
+        if (!isNumber(octave)) {
+            throw new TypeError('Octave must be a number.');
+        }
+        this.octave = octave;
+        this.scientific = this.name + octave.toString(10);
+        this.abc = scientificToAbc(this.scientific);
+        this.midi = pitchNames.indexOf(this.scientific);
+        this.frequency = mtof(this.midi);
+    };
+    Pitch.prototype.isEquivalent = function (other) {
+        var otherNote = toNote(other);
+        if (this.name !== otherNote.name) {
+            return false;
+        }
+        if (otherNote instanceof Pitch && this.octave !== otherNote.octave) {
+            return false;
+        }
+        return true;
+    };
+    Pitch.prototype.isEnharmonic = function (other) {
+        var otherNote = toNote(other);
+        if (this.pitchClass !== otherNote.pitchClass) {
+            return false;
+        }
+        if (otherNote instanceof Pitch && (Math.abs(this.midi - otherNote.midi) > 11)) {
+            return false;
+        }
+        return true;
+    };
+    Pitch.prototype.transpose = function (direction, interval) {
+        return new Pitch(transpose(this.scientific, direction, interval));
+    };
+    Pitch.prototype.up = function (interval) {
+        return this.transpose('up', interval);
+    };
+    Pitch.prototype.down = function (interval) {
+        return this.transpose('down', interval);
+    };
+    Pitch.prototype.toString = function () {
+        return '[pitch ' + this.scientific + ']';
+    };
+    return Pitch;
+}(Note));
 function toNote(input) {
     if (isString(input)) {
-        return new Note(input);
+        var parsed = validateNoteName(input).parse();
+        if (!parsed) {
+            throw new Error('Invalid note name.');
+        }
+        if (parsed.octave !== null) {
+            return new Pitch(input);
+        }
+        else {
+            return new Note(input);
+        }
     }
     else {
         return input;
     }
 }
-
-function validateAbcNoteName(abcNoteName) {
-    var abcRegex = /((?:\_|\=|\^)*)([a-g]|[A-G])((?:\,|\')*)/;
-    return makeValidation('abc-note', abcRegex, function (captures) {
-        return {
-            accidental: captures[1] ? captures[1] : '',
-            step: captures[2],
-            adjustments: captures[3] ? captures[3] : ''
-        };
-    })(abcNoteName);
-}
-
-function abc(abcInput) {
-    var sci = abcToScientific(abcInput);
-    return new Note(sci);
-}
-var accidentals = {
-    "_": -1,
-    "=": 0,
-    "^": 1
-};
-// octave adjustments
-var adjustments = {
-    ",": -1,
-    "'": 1
-};
-function abcToScientific(abcInput) {
-    var parsed = validateAbcNoteName(abcInput).parse();
-    if (!parsed) {
-        throw new Error('Cannot convert ABC to scientific notation. Invalid ABC note name.');
-    }
-    var step, alter = 0, accidental, octave;
-    // if parsed step is a capital letter
-    if (/[A-G]/.test(parsed.step)) {
-        octave = 4;
-    }
-    else { // parsed step is lowercase
-        octave = 5;
-    }
-    // get the total alter value of all accidentals present
-    for (var c = 0; c < parsed.accidental.length; c++) {
-        alter += accidentals[parsed.accidental[c]];
-    }
-    // for each comma or apostrophe adjustment, adjust the octave value
-    for (var d = 0; d < parsed.adjustments.length; d++) {
-        octave += adjustments[parsed.adjustments[d]];
-    }
-    step = parsed.step.toUpperCase();
-    accidental = alterToAccidental(alter);
-    var output = step + accidental + octave.toString(10);
-    if (!validateNoteName(output).valid) {
-        throw new Error('Something went wrong converting ABC to scientific notation. Output invalid.');
-    }
-    return output;
-}
-function scientificToAbc(scientific) {
-    var parsed = validateNoteName(scientific).parse();
-    if (!parsed || parsed.octave === null) {
-        throw new Error('Cannot convert scientific to ABC. Invalid scientific note name.');
-    }
-    var abc_accidental = '', abc_step, abc_octave = '';
-    var alter = accidentalToAlter(parsed.accidental);
-    // add abc accidental symbols until alter is consumed (alter === 0)
-    while (alter < 0) {
-        abc_accidental += '_';
-        alter += 1;
-    }
-    while (alter > 0) {
-        abc_accidental += '^';
-        alter -= 1;
-    }
-    // step must be lowercase for octaves above 5
-    // add apostrophes or commas to get abc_octave
-    //   to the correct value
-    var o = parsed.octave;
-    if (o >= 5) {
-        abc_step = parsed.step.toLowerCase();
-        for (; o > 5; o--) {
-            abc_octave += '\'';
-        }
-    }
-    else {
-        abc_step = parsed.step.toUpperCase();
-        for (; o < 4; o++) {
-            abc_octave += ',';
-        }
-    }
-    var output = abc_accidental + abc_step + abc_octave;
-    if (!validateAbcNoteName(output).valid) {
-        throw new Error('Something went wrong converting scientific to ABC. Output invalid.');
-    }
-    return output;
-}
-
-function validateKeyName(keyName) {
-    var keyRegex = /^([A-G])(b+|\#+|x+)* ?(m|major|minor)?$/i;
-    return makeValidation('key', keyRegex, function (captures) {
-        return {
-            step: captures[1],
-            accidental: captures[2] ? captures[2] : '',
-            quality: captures[3] ? captures[3] : ''
-        };
-    })(keyName);
-}
-
-var Key = /** @class */ (function () {
-    function Key(keyInput) {
-        // run input through validation
-        var parsed = validateKeyName(keyInput).parse();
-        if (!parsed) {
-            throw new Error('Invalid key name: ' + keyInput.toString());
-        }
-        // assign mode based on the parsed input's quality
-        if (/[a-g]/.test(parsed.step) || parsed.quality === 'minor' || parsed.quality === 'm') {
-            this.mode = 'minor';
-        }
-        else {
-            this.mode = 'major';
-        }
-        // now that we have the mode, enforce uppercase for root note
-        parsed.step = parsed.step.toUpperCase();
-        // get fifths for major key
-        this.fifths = fifths.indexOf(parsed.step + parsed.accidental);
-        // minor is 3 fifths less than major
-        if (this.mode === 'minor') {
-            this.fifths -= 3;
-            this.name = parsed.step.toLowerCase() + parsed.accidental + ' minor';
-        }
-        else {
-            this.name = parsed.step + parsed.accidental + ' major';
-        }
-    }
-    return Key;
-}());
 
 function validateChordName(chordName) {
     // lets split up this ugly regex
@@ -900,4 +995,4 @@ function getIntervalSpecies(size) {
     }
 }
 
-export { Chord, Circle, Interval, Key, Note, abc, circles };
+export { Chord, Circle, Interval, Key, Note, Pitch, abc, circles };

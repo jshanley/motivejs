@@ -1,13 +1,12 @@
-import Note from './note';
 import {accidentalToAlter, alterToAccidental} from './convert';
 
 import validateNoteName from './validators/note';
 import validateAbcNoteName from './validators/abc-note';
 
 
-function abc(abcInput: string): Note {
+function abc(abcInput: string) {
   var sci = abcToScientific(abcInput);
-  return new Note(sci);
+  return sci;
 }
 
 const accidentals = {

@@ -1,11 +1,4 @@
-interface ICircle<T, U> {
-  array: T[];
-  size: number;
-  indexOf: (item: U) => number;
-  atIndex: (index: number) => T;
-}
-
-class Circle<T, U> implements ICircle<T, U> {
+class Circle<T, U> {
   array: any[];
   size: number;
 
@@ -44,7 +37,6 @@ function mod12(a: number): number {
 }
 
 export {
-  ICircle,
   Circle,
   modulo,
   mod7,
